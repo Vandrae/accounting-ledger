@@ -1,6 +1,8 @@
 package com.pluralsight;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -21,37 +23,57 @@ public class AccountingApp {
         String menuSelection = input.next();
 
 
-        //asks the user to enter additonal information depending on what choice they chose in main menu
-        if (menuSelection.equalsIgnoreCase("D")){
-            //asks user to enter description
-            System.out.print("enter a description: ");
-            String depositDescription = input.next();
-            //asks user to enter Vendor
-            System.out.print("Who is the Vendor? : ");
-            String depositVendor = input.next();
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            double depositAmount = input.nextDouble();
-
-            //today's date and current time
-            LocalDateTime currentTime = LocalDateTime.now();
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = currentTime.format(dateTimeFormatter);
-
-            //calls method from transaction class to make a string
-            Transaction depositTransaction = new Transaction(currentTime,depositDescription,depositVendor,depositAmount);
-            System.out.println(depositTransaction);
-
             try {
-                FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv",true);
-            }catch (Exception e){
+                //asks the user to enter additonal information depending on what choice they chose in main menu
+                String depositDescription = null;
+                LocalDateTime currentTime = null;
+                String depositVendor = null;
+                double depositAmount = 0;
+                Transaction depositTransaction = null;
+                if (menuSelection.equalsIgnoreCase("D")) {
+                    //asks user to enter description
+                    System.out.print("enter a description: ");
+                    depositDescription = input.next();
+                    //asks user to enter Vendor
+                    System.out.print("Who is the Vendor? : ");
+                    depositVendor = input.next();
+                    //asks user to enter amount
+                    System.out.print("What is the amount? : ");
+                    depositAmount = input.nextDouble();
+
+                    //today's date and current time
+                    currentTime = LocalDateTime.now();
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String formattedDateTime = currentTime.format(dateTimeFormatter);
+
+                    //calls method from transaction class to make a string
+                    depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
+
+                }
+
+                FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv", true);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                String line;
+
+                bufferedWriter.write(String.valueOf(depositTransaction));
+                bufferedWriter.newLine();
+
+                bufferedWriter.close();
+
+            } catch (Exception e){
+                System.out.println("ERROR: An unexpected error occurred");
+                e.printStackTrace();
 
             }
 
 
         }
 
-    }
+
+        }
+
+
+
 
 
 
@@ -61,5 +83,5 @@ public class AccountingApp {
 
 
 
-}
+
 

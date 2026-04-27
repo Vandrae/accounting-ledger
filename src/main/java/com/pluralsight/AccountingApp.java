@@ -1,13 +1,12 @@
 package com.pluralsight;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class AccountingApp {
     public static Scanner input = new Scanner(System.in);
+
     public static void main(String[] args) {
         //Display Home Screen (think about making each option on a println)
         System.out.println("Home Screen");
@@ -30,12 +29,20 @@ public class AccountingApp {
             //asks user to enter amount
             System.out.print("What is the amount? : ");
             double depositAmount = input.nextDouble();
+
+            //today's date and current time
+            LocalDateTime currentTime = LocalDateTime.now();
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = currentTime.format(dateTimeFormatter);
+            System.out.println(formattedDateTime);
+
+
         }
 
     }
-    //App auto fills todays date and current time
-    //user picks D
-    //App auto fills todays date and current time
+
+
+
     //app saves the new transaction to a csv file
     //app returns to menu
     //user picks "x" to exit app

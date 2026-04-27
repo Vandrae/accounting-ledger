@@ -1,5 +1,6 @@
 package com.pluralsight;
 
+import java.io.FileWriter;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -8,6 +9,7 @@ public class AccountingApp {
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
+
         //Display Home Screen (think about making each option on a println)
         System.out.println("Home Screen");
         System.out.println(" ");
@@ -17,6 +19,7 @@ public class AccountingApp {
         System.out.println("X) Exit");
         System.out.print("Pick an option from the menu above: ");
         String menuSelection = input.next();
+
 
         //asks the user to enter additonal information depending on what choice they chose in main menu
         if (menuSelection.equalsIgnoreCase("D")){
@@ -34,7 +37,16 @@ public class AccountingApp {
             LocalDateTime currentTime = LocalDateTime.now();
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentTime.format(dateTimeFormatter);
-            System.out.println(formattedDateTime);
+
+            //calls method from transaction class to make a string
+            Transaction depositTransaction = new Transaction(currentTime,depositDescription,depositVendor,depositAmount);
+            System.out.println(depositTransaction);
+
+            try {
+                FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv",true);
+            }catch (Exception e){
+
+            }
 
 
         }

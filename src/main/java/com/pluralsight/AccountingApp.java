@@ -139,6 +139,40 @@ public class AccountingApp {
     }
 
     public static void ledgerMenu(){
+        //prints transactions to console
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        try {
+            //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            //ArrayList<String> list = new ArrayList<>();
+
+            String t;
+            //while the line isnt empty print it
+            while ((t = bufferedReader.readLine()) != null){
+                //list.add(t);
+                String[] entry = t.split("\\|");
+                //LocalDateTime dateTime, String description, String vendor, double amount
+                //2026-04-27|18:15:32|test|apple|45.37
+                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                String description =  entry[2];
+                String vendor =  entry[3];
+                double amount = Double.parseDouble(entry[4]);
+                transactions.add(new Transaction(dateTime, description, vendor, amount));
+
+
+            }
+            bufferedReader.close();
+            //accounts for error of 1 index prints the list if its index 0 or greater. then counts down by 1 each iteration
+            //prits what's on the line n
+//            for (int n = list.size() - 1; n >= 0; n--) {
+//                System.out.println(list.get(n));
+//            }
+
+        }catch (Exception e){
+            System.out.println("An error occurred");
+        }
         while (true) {
             System.out.println("Ledger Menu");
             System.out.println(" ");
@@ -152,28 +186,28 @@ public class AccountingApp {
 
             if (ledgerSelection.equalsIgnoreCase("A")){
 
-                //prints transactions to console
-                try {
-                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String line;
-                    ArrayList<String> list = new ArrayList<>();
 
-                    String t;
-                    //while the line isnt empty print it
-                    while ((t = bufferedReader.readLine()) != null){
-                        list.add(t);
-                    }
-                    bufferedReader.close();
-                    //accounts for error of 1 index prints the list if its index 0 or greater. then counts down by 1 each iteration
-                    //prits what's on the line n
-                    for (int n = list.size() - 1; n >= 0; n--) {
-                        System.out.println(list.get(n));
-                    }
 
-                }catch (Exception e){
-                    System.out.println("An error occurred");
+                for (int i = 0; i<transactions.size(); i++){
+                    System.out.println(transactions.get(i).toString());
                 }
+
+            } else if (ledgerSelection.equalsIgnoreCase("D")) {
+                for (int i = 0; i<transactions.size(); i++){
+                    if (transactions.get(i).getAmount() > 0){
+                        System.out.println(transactions.get(i).toString());
+                    }
+                }
+
+                
+            } else if (ledgerSelection.equalsIgnoreCase("P")) {
+                for (int i = 0; i<transactions.size(); i++) {
+                    if (transactions.get(i).getAmount() < 0) {
+                        System.out.println(transactions.get(i).toString());
+                    }
+                }
+            } else if (ledgerSelection.equalsIgnoreCase("R")) {
+                    System.out.println("");
             } else if (ledgerSelection.equalsIgnoreCase("H")){
                 break;
             }

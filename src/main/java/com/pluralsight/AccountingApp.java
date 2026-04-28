@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class AccountingApp {
@@ -43,11 +45,10 @@ public class AccountingApp {
                     break;
                 }
 
-                //saves the new transaction to a csv file
 
 
             } catch (Exception e) {
-                System.out.println("ERROR: An unexpected error occurred");
+                System.out.println("An error occurred");
                 e.printStackTrace();
 
             }
@@ -91,7 +92,7 @@ public class AccountingApp {
             bufferedWriter.newLine();
             bufferedWriter.close();
         }catch (Exception e){
-            System.out.println("bad");
+            System.out.println("An error occurred");
         }
 
 
@@ -131,7 +132,7 @@ public class AccountingApp {
             bufferedWriter.newLine();
             bufferedWriter.close();
         }catch (Exception e){
-            System.out.println("bad");
+            System.out.println("An error occurred");
         }
 
 
@@ -149,7 +150,31 @@ public class AccountingApp {
             System.out.print("Pick an option from the menu above: ");
             String ledgerSelection = input.nextLine();
 
-            if (ledgerSelection.equalsIgnoreCase("H")){
+            if (ledgerSelection.equalsIgnoreCase("A")){
+
+                //prints transactions to console
+                try {
+                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String line;
+                    ArrayList<String> list = new ArrayList<>();
+
+                    String t;
+                    //while the line isnt empty print it
+                    while ((t = bufferedReader.readLine()) != null){
+                        list.add(t);
+                    }
+                    bufferedReader.close();
+                    //accounts for error of 1 index prints the list if its index 0 or greater. then counts down by 1 each iteration
+                    //prits what's on the line n
+                    for (int n = list.size() - 1; n >= 0; n--) {
+                        System.out.println(list.get(n));
+                    }
+
+                }catch (Exception e){
+                    System.out.println("An error occurred");
+                }
+            } else if (ledgerSelection.equalsIgnoreCase("H")){
                 break;
             }
         }

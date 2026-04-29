@@ -150,10 +150,8 @@ public class AccountingApp {
             String t;
             //while the line isnt empty print it
             while ((t = bufferedReader.readLine()) != null){
-                //list.add(t);
+
                 String[] entry = t.split("\\|");
-                //LocalDateTime dateTime, String description, String vendor, double amount
-                //2026-04-27|18:15:32|test|apple|45.37
                 LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
                 String description =  entry[2];
                 String vendor =  entry[3];
@@ -193,7 +191,6 @@ public class AccountingApp {
                     }
                 }
 
-                
             } else if (ledgerSelection.equalsIgnoreCase("P")) {
                 for (int i = 0; i<transactions.size(); i++) {
                     if (transactions.get(i).getAmount() < 0) {
@@ -206,6 +203,18 @@ public class AccountingApp {
                 break;
             }
         }
+    }
+
+    //for future use
+    public static void ledgerArray(){
+    }
+
+    //for future use
+    public static void ledgerDeposit(){
+    }
+
+    //for future use
+    public static void ledgerPayment(){
     }
 
     public  static void reportsMenu(){
@@ -222,7 +231,38 @@ public class AccountingApp {
             int reportsSelection = input.nextInt();
 
             if (reportsSelection == 1){
+                try {
+                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String line;
+                    ArrayList<String> list = new ArrayList<>();
 
+                    String t;
+
+                    LocalDate dateToday = LocalDate.now();
+                    int todayMonth = dateToday.getMonthValue();
+                    int todayYear = dateToday.getYear();
+
+                    while ((t = bufferedReader.readLine()) != null){
+                        String[] entry = t.split("\\|");
+                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        int dateMonth = dateTime.getMonthValue();
+                        int dateYear = dateTime.getYear();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                        if (dateMonth == todayMonth && dateYear == todayYear){
+                            System.out.println(t);
+                        }
+                    }
+
+                }catch (Exception e){
+                    System.out.println("error");
+                }
+                
+
+            } else if () {
+                
             } else if (reportsSelection == 0) {
                 break;
             }

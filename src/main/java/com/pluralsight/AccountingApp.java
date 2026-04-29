@@ -261,12 +261,132 @@ public class AccountingApp {
                 }
                 
 
-            } else if () {
-                
-            } else if (reportsSelection == 0) {
+            } else if (reportsSelection == 2) {
+                try {
+                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String line;
+                    ArrayList<String> list = new ArrayList<>();
+
+                    String t;
+
+                    LocalDate dateToday = LocalDate.now();
+                    int todayMonth = dateToday.getMonthValue();
+                    int todayYear = dateToday.getYear();
+
+                    while ((t = bufferedReader.readLine()) != null){
+                        String[] entry = t.split("\\|");
+                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        int dateMonth = dateTime.getMonthValue();
+                        int dateYear = dateTime.getYear();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                        if (dateMonth == todayMonth - 1 && dateYear == todayYear){
+                            System.out.println(t);
+                        }
+                    }
+
+                }catch (Exception e){
+                    System.out.println("error");
+                }
+
+            } else if (reportsSelection == 3) {
+                try {
+                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String line;
+                    ArrayList<String> list = new ArrayList<>();
+
+                    String t;
+
+                    LocalDate dateToday = LocalDate.now();
+                    int todayMonth = dateToday.getMonthValue();
+                    int todayYear = dateToday.getYear();
+
+                    while ((t = bufferedReader.readLine()) != null){
+                        String[] entry = t.split("\\|");
+                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        int dateMonth = dateTime.getMonthValue();
+                        int dateYear = dateTime.getYear();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                        if (dateYear == todayYear){
+                            System.out.println(t);
+                        }
+                    }
+
+                }catch (Exception e){
+                    System.out.println("error");
+                }
+
+            }else if (reportsSelection == 4) {
+                try {
+                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String line;
+                    ArrayList<String> list = new ArrayList<>();
+
+                    String t;
+
+                    LocalDate dateToday = LocalDate.now();
+                    int todayMonth = dateToday.getMonthValue();
+                    int todayYear = dateToday.getYear();
+
+                    while ((t = bufferedReader.readLine()) != null){
+                        String[] entry = t.split("\\|");
+                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        int dateMonth = dateTime.getMonthValue();
+                        int dateYear = dateTime.getYear();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                        if (dateYear == todayYear - 1){
+                            System.out.println(t);
+                        }
+                    }
+
+                }catch (Exception e){
+                    System.out.println("error");
+                }
+            }
+            else if (reportsSelection == 5) {
+                vendorSearch();
+            }else if (reportsSelection == 0) {
                 break;
             }
 
+        }
+    }
+
+    public static void vendorSearch(){
+        String reportVendor;
+        try {
+            System.out.print("Who is the Vendor? : ");
+            input.nextLine();
+            reportVendor = input.nextLine();
+
+            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            ArrayList<String> list = new ArrayList<>();
+            String t;
+
+            while ((t = bufferedReader.readLine()) != null){
+
+                String[] entry = t.split("\\|");
+                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                String vendor =  entry[3];
+
+                if (entry[3].equals(reportVendor)){
+                    System.out.println(t);
+                }
+
+            }
+            bufferedReader.close();
+
+        }catch (Exception e){
+            System.out.println("An error occurred");
         }
     }
 

@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Scanner;
 
 public class AccountingApp {
@@ -137,7 +136,7 @@ public class AccountingApp {
 
 
     }
-
+// break into smaller methods
     public static void ledgerMenu(){
         //prints transactions to console
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -164,11 +163,6 @@ public class AccountingApp {
 
             }
             bufferedReader.close();
-            //accounts for error of 1 index prints the list if its index 0 or greater. then counts down by 1 each iteration
-            //prits what's on the line n
-//            for (int n = list.size() - 1; n >= 0; n--) {
-//                System.out.println(list.get(n));
-//            }
 
         }catch (Exception e){
             System.out.println("An error occurred");
@@ -207,10 +201,32 @@ public class AccountingApp {
                     }
                 }
             } else if (ledgerSelection.equalsIgnoreCase("R")) {
-                    System.out.println("");
+                    reportsMenu();
             } else if (ledgerSelection.equalsIgnoreCase("H")){
                 break;
             }
+        }
+    }
+
+    public  static void reportsMenu(){
+        while (true) {
+            System.out.println("Reports Menu");
+            System.out.println(" ");
+            System.out.println("1) Month To Date");
+            System.out.println("2) Previous Month");
+            System.out.println("3) Year to Date");
+            System.out.println("4) Previous Year");
+            System.out.println("5) Search by Vendor");
+            System.out.println("0) Back");
+            System.out.print("Pick an option from the menu above: ");
+            int reportsSelection = input.nextInt();
+
+            if (reportsSelection == 1){
+
+            } else if (reportsSelection == 0) {
+                break;
+            }
+
         }
     }
 

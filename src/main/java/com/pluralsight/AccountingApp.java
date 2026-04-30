@@ -244,20 +244,7 @@ public class AccountingApp {
             int reportsSelection = input.nextInt();
 
             if (reportsSelection == 1) {
-
-                for (Transaction t : transactions) {
-
-                    //getting the date and time of the current transaction
-                    int dateMonth = t.getDateTime().getMonthValue();
-                    int dateYear = t.getDateTime().getYear();
-
-                    // comparing the current transaction to today's date and time
-                    if (dateMonth == todayMonth && dateYear == todayYear) {
-                        System.out.println(t);
-                    }
-
-                }
-
+                monthToDate(transactions, todayMonth, todayYear);
 
             } else if (reportsSelection == 2) {
 
@@ -278,7 +265,6 @@ public class AccountingApp {
                     //getting the date and time of the current transaction
                     int dateMonth = t.getDateTime().getMonthValue();
                     int dateYear = t.getDateTime().getYear();
-
 
                     if (dateYear == todayYear) {
                         System.out.println(t);
@@ -306,6 +292,33 @@ public class AccountingApp {
 
         }
     }
+
+// Month To Date
+// Previous Month
+// Year to Date
+// Previous Year
+
+    //neeed to call todayMonth in the method like transactions with the data type  so it can be used from reportsMenu
+    public static void monthToDate(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
+
+        for (Transaction t : transactions) {
+
+            //getting the date and time of the current transaction
+            LocalDate dateToday = LocalDate.now();
+            int dateMonth = t.getDateTime().getMonthValue();
+            int dateYear = t.getDateTime().getYear();
+
+            // comparing the current transaction to today's date and time
+            if (dateMonth == todayMonth && dateYear == todayYear) {
+                System.out.println(t);
+            }
+
+        }
+    }
+
+
+
+
 
     public static void vendorSearch(ArrayList<Transaction> transactions) {
         String reportVendor;

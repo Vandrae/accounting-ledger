@@ -32,6 +32,8 @@ public class AccountingApp {
             System.out.println("X) Exit");
             System.out.print("Pick an option from the menu above: ");
             String menuSelection = input.nextLine();
+            System.out.println("-------------------------------------");
+            System.out.println(" ");
 
             //try's to do this
             try {
@@ -180,6 +182,7 @@ public class AccountingApp {
         //prints transactions to console
         ArrayList<Transaction> transactions = loadTransactions();
         while (true) {
+            System.out.println(" ");
             System.out.println("Ledger Menu");
             System.out.println(" ");
             System.out.println("A) All");
@@ -189,6 +192,8 @@ public class AccountingApp {
             System.out.println("H) Home");
             System.out.print("Pick an option from the menu above: ");
             String ledgerSelection = input.nextLine();
+            System.out.println("-------------------------------------");
+            System.out.println(" ");
 
             //if statement that calls methods for specific jobs
             if (ledgerSelection.equalsIgnoreCase("A")) {
@@ -243,6 +248,7 @@ public class AccountingApp {
         int todayYear = dateToday.getYear();
 
         while (true) {
+            System.out.println(" ");
             System.out.println("Reports Menu");
             System.out.println(" ");
             System.out.println("1) Month To Date");
@@ -253,6 +259,8 @@ public class AccountingApp {
             System.out.println("0) Back");
             System.out.print("Pick an option from the menu above: ");
             int reportsSelection = input.nextInt();
+            System.out.println("-------------------------------------");
+            System.out.println(" ");
 
             if (reportsSelection == 1) {
                 monthToDate(transactions, todayMonth, todayYear);

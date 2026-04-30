@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Transaction {
+    //transaction data
     private LocalDateTime dateTime;
     private String description;
     private String vendor;
     private double amount;
 
+    //getters & setters
     public Transaction(LocalDateTime dateTime, String description, String vendor, double amount) {
         this.dateTime = dateTime;
         this.description = description;
@@ -48,6 +50,7 @@ public class Transaction {
         this.amount = amount;
     }
 
+    //Method to turn data into a string
     public String toString(){
         LocalDateTime currentTime = dateTime;
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss");

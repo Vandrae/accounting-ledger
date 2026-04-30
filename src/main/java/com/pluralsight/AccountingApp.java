@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountingApp {
+    //allows user input
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -17,9 +18,12 @@ public class AccountingApp {
         homeMenu();
     }
 
+
+    //First menu user sees
     public static void homeMenu() {
         while (true) {
-            //Display Home Screen (think about making each option on a println)
+            //Display Home Screen
+            System.out.println(" ");
             System.out.println("Home Screen");
             System.out.println(" ");
             System.out.println("D) Add Deposit");
@@ -29,47 +33,47 @@ public class AccountingApp {
             System.out.print("Pick an option from the menu above: ");
             String menuSelection = input.nextLine();
 
-
+            //try's to do this
             try {
 
+                    //calls methods with code for each function
                 if (menuSelection.equalsIgnoreCase("D")) {
                     makeDeposit();
+
                 } else if (menuSelection.equalsIgnoreCase("P")) {
                     makePayment();
+
                 } else if (menuSelection.equalsIgnoreCase("L")) {
                     ledgerMenu();
                 }
-                //if x is selected ends loop
+                //if x is ends program
                 else if (menuSelection.equalsIgnoreCase("X")) {
                     break;
                 }
 
-
+               //if it cant do the try prints "An error occurred"
             } catch (Exception e) {
                 System.out.println("An error occurred");
                 e.printStackTrace();
 
             }
 
-
         }
 
     }
 
-    //loadTransactions methos is responsible for reading the
-    //transaction.cvs file and returning an array with the most up to date list
-
+    //loadTransactions methods is responsible for reading the
+    //transaction.cvs file and returning an array with the most up-to-date list
     public static ArrayList<Transaction> loadTransactions() {
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         try {
-            //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            //declare file reader so we don't have to keep declaring it though out program
+            //reads from this specific csv file
             FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
-            //ArrayList<String> list = new ArrayList<>();
-
             String t;
-            //while the line isnt empty print it
+
+            //while the line isn't empty print it
             while ((t = bufferedReader.readLine()) != null) {
 
                 String[] entry = t.split("\\|");
@@ -88,7 +92,7 @@ public class AccountingApp {
         return transactions;
     }
 
-
+    //method to be used in the home menu
     public static void makePayment() {
         String depositDescription;
         LocalDateTime currentTime;
@@ -101,6 +105,7 @@ public class AccountingApp {
             //asks user to enter Vendor
             System.out.print("Who is the Vendor? : ");
             depositVendor = input.nextLine();
+
             //asks user to enter amount
             System.out.print("What is the amount? : ");
             depositAmount = input.nextDouble();
@@ -112,8 +117,11 @@ public class AccountingApp {
             String formattedDateTime = currentTime.format(dateTimeFormatter);
 
 
-            //calls method from transaction class to make a string
-            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount * -1);
+            //if they enter a  negative it doesn't multiply a negative by a negative
+            if (depositAmount >= 0){
+                depositAmount *= -1;
+           }
+            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor,depositAmount);
 
             FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -127,8 +135,7 @@ public class AccountingApp {
 
 
     }
-
-
+    //method to be used in the home menu
     public static void makeDeposit() {
         String depositDescription;
         LocalDateTime currentTime;
@@ -152,8 +159,8 @@ public class AccountingApp {
             String formattedDateTime = currentTime.format(dateTimeFormatter);
 
 
-            //calls method from transaction class to make a string
-            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
+            //regardless if they enter negative or positive output will always be a positive
+            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
 
             FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -168,7 +175,7 @@ public class AccountingApp {
 
     }
 
-    // break into smaller methods
+    // Level 2 Menu
     public static void ledgerMenu() {
         //prints transactions to console
         ArrayList<Transaction> transactions = loadTransactions();
@@ -183,45 +190,49 @@ public class AccountingApp {
             System.out.print("Pick an option from the menu above: ");
             String ledgerSelection = input.nextLine();
 
+            //if statement that calls methods for specific jobs
             if (ledgerSelection.equalsIgnoreCase("A")) {
-
-                for (int i = 0; i < transactions.size(); i++) {
-                    System.out.println(transactions.get(i).toString());
-                }
+                ledgerAll(transactions);
 
             } else if (ledgerSelection.equalsIgnoreCase("D")) {
-                for (int i = 0; i < transactions.size(); i++) {
-                    if (transactions.get(i).getAmount() > 0) {
-                        System.out.println(transactions.get(i).toString());
-                    }
-                }
+                ledgerDeposit(transactions);
 
             } else if (ledgerSelection.equalsIgnoreCase("P")) {
-                for (int i = 0; i < transactions.size(); i++) {
-                    if (transactions.get(i).getAmount() < 0) {
-                        System.out.println(transactions.get(i).toString());
-                    }
-                }
+                ledgerPayment(transactions);
+
             } else if (ledgerSelection.equalsIgnoreCase("R")) {
                 reportsMenu();
+
             } else if (ledgerSelection.equalsIgnoreCase("H")) {
                 break;
             }
         }
     }
 
-    //for future use
-    public static void ledgerArray() {
+    //method to display all entries on the Ledger
+    public static void ledgerAll(ArrayList<Transaction> transactions) {
+        for (int i = 0; i < transactions.size(); i++) {
+            System.out.println(transactions.get(i).toString());
+        }
+    }
+    //method to display all Deposits
+    public static void ledgerDeposit(ArrayList<Transaction> transactions) {
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getAmount() > 0) {
+                System.out.println(transactions.get(i).toString());
+            }
+        }
+    }
+    //method to display all Payments
+    public static void ledgerPayment(ArrayList<Transaction> transactions) {
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i).getAmount() < 0) {
+                System.out.println(transactions.get(i).toString());
+            }
+        }
     }
 
-    //for future use
-    public static void ledgerDeposit() {
-    }
-
-    //for future use
-    public static void ledgerPayment() {
-    }
-
+    //Level 3 Menu
     public static void reportsMenu() {
 
         //getting most recent list of transactions
@@ -247,45 +258,17 @@ public class AccountingApp {
                 monthToDate(transactions, todayMonth, todayYear);
 
             } else if (reportsSelection == 2) {
-
-                for (Transaction t : transactions) {
-
-                    //getting the date and time of the current transaction
-                    int dateMonth = t.getDateTime().getMonthValue();
-                    int dateYear = t.getDateTime().getYear();
-
-                    if (dateMonth == todayMonth - 1 && dateYear == todayYear) {
-                        System.out.println(t);
-                    }
-                }
+                prevMonth(transactions, todayMonth, todayYear);
 
             } else if (reportsSelection == 3) {
-                for (Transaction t : transactions) {
-
-                    //getting the date and time of the current transaction
-                    int dateMonth = t.getDateTime().getMonthValue();
-                    int dateYear = t.getDateTime().getYear();
-
-                    if (dateYear == todayYear) {
-                        System.out.println(t);
-                    }
-                }
-
+                yearToDate(transactions, todayYear);
 
             } else if (reportsSelection == 4) {
-                for (Transaction t : transactions) {
-
-                    //getting the date and time of the current transaction
-                    int dateMonth = t.getDateTime().getMonthValue();
-                    int dateYear = t.getDateTime().getYear();
-
-                    if (dateYear == todayYear - 1) {
-                        System.out.println(t);
-                    }
-                }
+                prevYear(transactions, todayYear);
 
             } else if (reportsSelection == 5) {
                 vendorSearch(transactions);
+
             } else if (reportsSelection == 0) {
                 break;
             }
@@ -293,12 +276,9 @@ public class AccountingApp {
         }
     }
 
-// Month To Date
-// Previous Month
-// Year to Date
-// Previous Year
-
-    //neeed to call todayMonth in the method like transactions with the data type  so it can be used from reportsMenu
+    //methods to be used in the reports menu
+    //need to call todayMonth in the method like transactions with the data type  so it can be used from reportsMenu
+    //display all transactions from the current month to today
     public static void monthToDate(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
 
         for (Transaction t : transactions) {
@@ -315,11 +295,50 @@ public class AccountingApp {
 
         }
     }
+    //display all transactions from the previous month
+    public static void prevMonth(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
+        for (Transaction t : transactions) {
 
+            LocalDate dateToday = LocalDate.now();
+            int dateMonth = t.getDateTime().getMonthValue();
+            int dateYear = t.getDateTime().getYear();
 
+            // prints last month's transactions
+            if (dateMonth == todayMonth - 1 && dateYear == todayYear) {
+                System.out.println(t);
+            }
 
+        }
+    }
+    //display all transactions from the current year to today
+    public static void yearToDate(ArrayList<Transaction> transactions, int todayYear){
+        for (Transaction t : transactions) {
 
+            LocalDate dateToday = LocalDate.now();
+            int dateMonth = t.getDateTime().getMonthValue();
+            int dateYear = t.getDateTime().getYear();
 
+            // prints this year's transactions
+            if (dateYear == todayYear) {
+                System.out.println(t);
+            }
+        }
+    }
+    //display all transactions from the previous year
+    public static void prevYear(ArrayList<Transaction> transactions, int todayYear){
+        for (Transaction t : transactions) {
+
+            LocalDate dateToday = LocalDate.now();
+            int dateMonth = t.getDateTime().getMonthValue();
+            int dateYear = t.getDateTime().getYear();
+
+            // prints last year's transactions
+            if (dateYear == todayYear - 1) {
+                System.out.println(t);
+            }
+        }
+    }
+    //display all transactions from a vendor that the user searches for
     public static void vendorSearch(ArrayList<Transaction> transactions) {
         String reportVendor;
         System.out.print("Who is the Vendor? : ");

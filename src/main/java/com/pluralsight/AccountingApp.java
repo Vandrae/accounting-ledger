@@ -45,7 +45,6 @@ public class AccountingApp {
                 }
 
 
-
             } catch (Exception e) {
                 System.out.println("An error occurred");
                 e.printStackTrace();
@@ -57,8 +56,40 @@ public class AccountingApp {
 
     }
 
+    //loadTransactions methos is responsible for reading the
+    //transaction.cvs file and returning an array with the most up to date list
 
-    public static void makePayment(){
+    public static ArrayList<Transaction> loadTransactions() {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        try {
+            //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            //ArrayList<String> list = new ArrayList<>();
+
+            String t;
+            //while the line isnt empty print it
+            while ((t = bufferedReader.readLine()) != null) {
+
+                String[] entry = t.split("\\|");
+                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+                String description = entry[2];
+                String vendor = entry[3];
+                double amount = Double.parseDouble(entry[4]);
+                transactions.add(new Transaction(dateTime, description, vendor, amount));
+
+            }
+            bufferedReader.close();
+
+        } catch (Exception e) {
+            System.out.println("An error occurred");
+        }
+        return transactions;
+    }
+
+
+    public static void makePayment() {
         String depositDescription;
         LocalDateTime currentTime;
         String depositVendor;
@@ -90,7 +121,7 @@ public class AccountingApp {
             bufferedWriter.write(String.valueOf(depositTransaction));
             bufferedWriter.newLine();
             bufferedWriter.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("An error occurred");
         }
 
@@ -98,7 +129,7 @@ public class AccountingApp {
     }
 
 
-    public static void makeDeposit(){
+    public static void makeDeposit() {
         String depositDescription;
         LocalDateTime currentTime;
         String depositVendor;
@@ -130,41 +161,17 @@ public class AccountingApp {
             bufferedWriter.write(String.valueOf(depositTransaction));
             bufferedWriter.newLine();
             bufferedWriter.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("An error occurred");
         }
 
 
     }
-// break into smaller methods
-    public static void ledgerMenu(){
+
+    // break into smaller methods
+    public static void ledgerMenu() {
         //prints transactions to console
-        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-        try {
-            //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
-            //ArrayList<String> list = new ArrayList<>();
-
-            String t;
-            //while the line isnt empty print it
-            while ((t = bufferedReader.readLine()) != null){
-
-                String[] entry = t.split("\\|");
-                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                String description =  entry[2];
-                String vendor =  entry[3];
-                double amount = Double.parseDouble(entry[4]);
-                transactions.add(new Transaction(dateTime, description, vendor, amount));
-
-
-            }
-            bufferedReader.close();
-
-        }catch (Exception e){
-            System.out.println("An error occurred");
-        }
+        ArrayList<Transaction> transactions = loadTransactions();
         while (true) {
             System.out.println("Ledger Menu");
             System.out.println(" ");
@@ -176,48 +183,54 @@ public class AccountingApp {
             System.out.print("Pick an option from the menu above: ");
             String ledgerSelection = input.nextLine();
 
-            if (ledgerSelection.equalsIgnoreCase("A")){
+            if (ledgerSelection.equalsIgnoreCase("A")) {
 
-
-
-                for (int i = 0; i<transactions.size(); i++){
+                for (int i = 0; i < transactions.size(); i++) {
                     System.out.println(transactions.get(i).toString());
                 }
 
             } else if (ledgerSelection.equalsIgnoreCase("D")) {
-                for (int i = 0; i<transactions.size(); i++){
-                    if (transactions.get(i).getAmount() > 0){
+                for (int i = 0; i < transactions.size(); i++) {
+                    if (transactions.get(i).getAmount() > 0) {
                         System.out.println(transactions.get(i).toString());
                     }
                 }
 
             } else if (ledgerSelection.equalsIgnoreCase("P")) {
-                for (int i = 0; i<transactions.size(); i++) {
+                for (int i = 0; i < transactions.size(); i++) {
                     if (transactions.get(i).getAmount() < 0) {
                         System.out.println(transactions.get(i).toString());
                     }
                 }
             } else if (ledgerSelection.equalsIgnoreCase("R")) {
-                    reportsMenu();
-            } else if (ledgerSelection.equalsIgnoreCase("H")){
+                reportsMenu();
+            } else if (ledgerSelection.equalsIgnoreCase("H")) {
                 break;
             }
         }
     }
 
     //for future use
-    public static void ledgerArray(){
+    public static void ledgerArray() {
     }
 
     //for future use
-    public static void ledgerDeposit(){
+    public static void ledgerDeposit() {
     }
 
     //for future use
-    public static void ledgerPayment(){
+    public static void ledgerPayment() {
     }
 
-    public  static void reportsMenu(){
+    public static void reportsMenu() {
+
+        //getting most recent list of transactions
+        ArrayList<Transaction> transactions = loadTransactions();
+
+        LocalDate dateToday = LocalDate.now();
+        int todayMonth = dateToday.getMonthValue();
+        int todayYear = dateToday.getYear();
+
         while (true) {
             System.out.println("Reports Menu");
             System.out.println(" ");
@@ -230,173 +243,86 @@ public class AccountingApp {
             System.out.print("Pick an option from the menu above: ");
             int reportsSelection = input.nextInt();
 
-            if (reportsSelection == 1){
-                try {
-                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String line;
-                    ArrayList<String> list = new ArrayList<>();
+            if (reportsSelection == 1) {
 
-                    String t;
+                for (Transaction t : transactions) {
 
-                    LocalDate dateToday = LocalDate.now();
-                    int todayMonth = dateToday.getMonthValue();
-                    int todayYear = dateToday.getYear();
+                    //getting the date and time of the current transaction
+                    int dateMonth = t.getDateTime().getMonthValue();
+                    int dateYear = t.getDateTime().getYear();
 
-                    while ((t = bufferedReader.readLine()) != null){
-                        String[] entry = t.split("\\|");
-                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        int dateMonth = dateTime.getMonthValue();
-                        int dateYear = dateTime.getYear();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-                        if (dateMonth == todayMonth && dateYear == todayYear){
-                            System.out.println(t);
-                        }
+                    // comparing the current transaction to today's date and time
+                    if (dateMonth == todayMonth && dateYear == todayYear) {
+                        System.out.println(t);
                     }
 
-                }catch (Exception e){
-                    System.out.println("error");
                 }
-                
+
 
             } else if (reportsSelection == 2) {
-                try {
-                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String line;
-                    ArrayList<String> list = new ArrayList<>();
 
-                    String t;
+                for (Transaction t : transactions) {
 
-                    LocalDate dateToday = LocalDate.now();
-                    int todayMonth = dateToday.getMonthValue();
-                    int todayYear = dateToday.getYear();
+                    //getting the date and time of the current transaction
+                    int dateMonth = t.getDateTime().getMonthValue();
+                    int dateYear = t.getDateTime().getYear();
 
-                    while ((t = bufferedReader.readLine()) != null){
-                        String[] entry = t.split("\\|");
-                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        int dateMonth = dateTime.getMonthValue();
-                        int dateYear = dateTime.getYear();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-                        if (dateMonth == todayMonth - 1 && dateYear == todayYear){
-                            System.out.println(t);
-                        }
+                    if (dateMonth == todayMonth - 1 && dateYear == todayYear) {
+                        System.out.println(t);
                     }
-
-                }catch (Exception e){
-                    System.out.println("error");
                 }
 
             } else if (reportsSelection == 3) {
-                try {
-                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String line;
-                    ArrayList<String> list = new ArrayList<>();
+                for (Transaction t : transactions) {
 
-                    String t;
+                    //getting the date and time of the current transaction
+                    int dateMonth = t.getDateTime().getMonthValue();
+                    int dateYear = t.getDateTime().getYear();
 
-                    LocalDate dateToday = LocalDate.now();
-                    int todayMonth = dateToday.getMonthValue();
-                    int todayYear = dateToday.getYear();
 
-                    while ((t = bufferedReader.readLine()) != null){
-                        String[] entry = t.split("\\|");
-                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        int dateMonth = dateTime.getMonthValue();
-                        int dateYear = dateTime.getYear();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-                        if (dateYear == todayYear){
-                            System.out.println(t);
-                        }
+                    if (dateYear == todayYear) {
+                        System.out.println(t);
                     }
-
-                }catch (Exception e){
-                    System.out.println("error");
                 }
 
-            }else if (reportsSelection == 4) {
-                try {
-                    FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    String line;
-                    ArrayList<String> list = new ArrayList<>();
 
-                    String t;
+            } else if (reportsSelection == 4) {
+                for (Transaction t : transactions) {
 
-                    LocalDate dateToday = LocalDate.now();
-                    int todayMonth = dateToday.getMonthValue();
-                    int todayYear = dateToday.getYear();
+                    //getting the date and time of the current transaction
+                    int dateMonth = t.getDateTime().getMonthValue();
+                    int dateYear = t.getDateTime().getYear();
 
-                    while ((t = bufferedReader.readLine()) != null){
-                        String[] entry = t.split("\\|");
-                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        int dateMonth = dateTime.getMonthValue();
-                        int dateYear = dateTime.getYear();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-                        if (dateYear == todayYear - 1){
-                            System.out.println(t);
-                        }
+                    if (dateYear == todayYear - 1) {
+                        System.out.println(t);
                     }
-
-                }catch (Exception e){
-                    System.out.println("error");
                 }
-            }
-            else if (reportsSelection == 5) {
-                vendorSearch();
-            }else if (reportsSelection == 0) {
+
+            } else if (reportsSelection == 5) {
+                vendorSearch(transactions);
+            } else if (reportsSelection == 0) {
                 break;
             }
 
         }
     }
 
-    public static void vendorSearch(){
+    public static void vendorSearch(ArrayList<Transaction> transactions) {
         String reportVendor;
-        try {
-            System.out.print("Who is the Vendor? : ");
-            input.nextLine();
-            reportVendor = input.nextLine();
+        System.out.print("Who is the Vendor? : ");
+        input.nextLine();
+        reportVendor = input.nextLine();
 
-            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            ArrayList<String> list = new ArrayList<>();
-            String t;
+        for (Transaction t : transactions) {
 
-            while ((t = bufferedReader.readLine()) != null){
-
-                String[] entry = t.split("\\|");
-                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
-                String vendor =  entry[3];
-
-                if (entry[3].equals(reportVendor)){
-                    System.out.println(t);
-                }
-
+            if (t.getVendor().equalsIgnoreCase(reportVendor)) {
+                System.out.println(t);
             }
-            bufferedReader.close();
 
-        }catch (Exception e){
-            System.out.println("An error occurred");
+
         }
     }
-
 }
-
-
-//app returns to menu
-//user picks "x" to exit app
-
-
 
 
 

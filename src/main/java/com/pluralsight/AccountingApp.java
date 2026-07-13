@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountingApp {
+
+    // Console Colors
+    public static final String GREEN = "\u001B[32m";
+
     //allows user input
     public static Scanner input = new Scanner(System.in);
 

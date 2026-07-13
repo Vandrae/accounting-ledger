@@ -18,7 +18,6 @@ public class AccountingApp {
         homeMenu();
     }
 
-
     //First menu user sees
     public static void homeMenu() {
         while (true) {

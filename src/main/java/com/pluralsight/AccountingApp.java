@@ -37,8 +37,6 @@ public class AccountingApp {
 
 
 
-            // Test bro :)
-
 
             //try's to do this
             try {
@@ -117,6 +115,8 @@ public class AccountingApp {
             System.out.print("What is the amount? : ");
             depositAmount = input.nextDouble();
             input.nextLine();
+
+
 
             //today's date and current time
             currentTime = LocalDateTime.now();

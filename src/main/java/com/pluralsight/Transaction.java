@@ -58,4 +58,4 @@ public class Transaction {
         return formattedDateTime + "|" + description + "|" + vendor + "|" + amount;
     }
 
-    }
+}

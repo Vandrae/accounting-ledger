@@ -24,12 +24,7 @@ public class AccountingApp {
     }
 
 
-    //method to display all entries on the Ledger
-    public static void ledgerAll(ArrayList<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            System.out.println(t);
-        }
-    }
+
     //method to display all Deposits
     public static void ledgerDeposit(ArrayList<Transaction> transactions) {
         for (Transaction t : transactions) {

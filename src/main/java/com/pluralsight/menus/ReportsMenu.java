@@ -1,17 +1,21 @@
 package com.pluralsight.menus;
 
-import com.pluralsight.util.FileManager;
 import com.pluralsight.model.Transaction;
 import com.pluralsight.service.ReportService;
+import com.pluralsight.util.FileManager;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReportsMenu {
 
-    static Scanner input = new Scanner(System.in);
+    //allows user input
+    public static Scanner input = new Scanner(System.in);
 
-    public static void displayReportMenu() {
+    //Level 3 Menu
+    public static void reportsMenu() {
+
+        //most recent list of transactions, newest first
         ArrayList<Transaction> transactions = FileManager.loadTransactionsSortedDesc();
 
         System.out.println(" ");
@@ -30,23 +34,28 @@ public class ReportsMenu {
         System.out.println("-------------------------------------");
         System.out.println(" ");
 
-        int selection;
+        int reportsSelection;
         try {
-            selection = Integer.parseInt(selectionText);
+            reportsSelection = Integer.parseInt(selectionText);
         } catch (NumberFormatException e) {
             System.out.println("Please enter a number from the menu.");
             return;
         }
 
-        switch (selection) {
+        switch (reportsSelection){
             case 1 -> ReportService.monthToDate(transactions);
             case 2 -> ReportService.prevMonth(transactions);
             case 3 -> ReportService.yearToDate(transactions);
             case 4 -> ReportService.prevYear(transactions);
             case 5 -> ReportService.vendorSearch(transactions, input);
             case 6 -> ReportService.customSearch(transactions, input);
-            case 0 -> System.out.println("Returning...");
+            case 0 -> {
+                System.out.println("Returning...");
+                return;
+            }
             default -> System.out.println("Not a valid option.");
         }
+
     }
+
 }

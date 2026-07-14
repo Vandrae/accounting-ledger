@@ -42,19 +42,28 @@ public class ReportsMenu {
             return;
         }
 
-        switch (reportsSelection){
-            case 1 -> ReportService.monthToDate(transactions);
-            case 2 -> ReportService.prevMonth(transactions);
-            case 3 -> ReportService.yearToDate(transactions);
-            case 4 -> ReportService.prevYear(transactions);
-            case 5 -> ReportService.vendorSearch(transactions, input);
-            case 6 -> ReportService.customSearch(transactions, input);
-            case 0 -> {
-                System.out.println("Returning...");
-                return;
+        if (selectionText.equalsIgnoreCase("1") || selectionText.equalsIgnoreCase("2") ||
+                selectionText.equalsIgnoreCase("3") || selectionText.equalsIgnoreCase("4") ||
+                selectionText.equalsIgnoreCase("5") || selectionText.equalsIgnoreCase("6") ||
+                selectionText.equalsIgnoreCase("0")
+        ){
+            switch (reportsSelection){
+                case 1 -> ReportService.monthToDate(transactions);
+                case 2 -> ReportService.prevMonth(transactions);
+                case 3 -> ReportService.yearToDate(transactions);
+                case 4 -> ReportService.prevYear(transactions);
+                case 5 -> ReportService.vendorSearch(transactions, input);
+                case 6 -> ReportService.customSearch(transactions, input);
+                case 0 -> {
+                    System.out.println("Returning...");
+                    return;
+                }
+                default -> System.out.println("Not a valid option.");
             }
-            default -> System.out.println("Not a valid option.");
+        }else {
+            System.out.println("Enter a valid input!");
         }
+
 
     }
 

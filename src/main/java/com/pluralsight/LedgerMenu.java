@@ -3,8 +3,11 @@ package com.pluralsight;
 import com.pluralsight.model.Transaction;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class LedgerMenu {
+
+    public static Scanner input = new Scanner(System.in);
 
     // Level 2 Menu
     public static void ledgerMenu() {

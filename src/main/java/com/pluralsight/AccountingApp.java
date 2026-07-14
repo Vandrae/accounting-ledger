@@ -30,23 +30,27 @@ public class AccountingApp {
     //First menu user sees
     public static void homeMenu() {
         while (true) {
-            //Display Home Screen
-            System.out.println(" ");
-            System.out.println("Home Screen");
-            System.out.println(" ");
-            System.out.println("D) Add Deposit");
-            System.out.println("P) Make Payment");
-            System.out.println("L) Ledger");
-            System.out.println("X) Exit");
-            System.out.print("Pick an option from the menu above: ");
+
+            ArrayList<Transaction> transactions = loadTransactions();
+            double currentBalance = getBalance(transactions);
+
+            System.out.println();
+            System.out.println(BLUE + "========================================");
+            System.out.println("         PERSONAL ACCOUNTING APP");
+            System.out.println("========================================" + RESET);
+            System.out.printf(GREEN + "Current Balance: $%.2f%n" + RESET,
+                    currentBalance);
+            System.out.println("----------------------------------------");
+            System.out.println("[D] Add Deposit");
+            System.out.println("[P] Make Payment");
+            System.out.println("[L] View Ledger");
+            System.out.println("[X] Exit");
+            System.out.println("----------------------------------------");
+            System.out.print("Choose an option: ");
+
             String menuSelection = input.nextLine();
-            System.out.println("-------------------------------------");
-            System.out.println(" ");
 
-            //try's to do this
             try {
-
-                    //calls methods with code for each function
                 if (menuSelection.equalsIgnoreCase("D")) {
                     makeDeposit();
 
@@ -55,23 +59,26 @@ public class AccountingApp {
 
                 } else if (menuSelection.equalsIgnoreCase("L")) {
                     ledgerMenu();
-                }
-                //if x is ends program
-                else if (menuSelection.equalsIgnoreCase("X")) {
+
+                } else if (menuSelection.equalsIgnoreCase("X")) {
+                    System.out.println(
+                            YELLOW + "Thank you for using the Accounting App!"
+                                    + RESET);
                     break;
+
+                } else {
+                    System.out.println(
+                            RED + "Invalid option. Please try again." + RESET);
                 }
 
-               //if it cant do the try prints "An error occurred"
             } catch (Exception e) {
-                System.out.println("An error occurred");
-                e.printStackTrace();
-
+                System.out.println(
+                        RED + "An error occurred. Please try again." + RESET);
             }
-
         }
 
-    }
 
+    }
     //loadTransactions methods is responsible for reading the
     //transaction.cvs file and returning an array with the most up-to-date list
     public static ArrayList<Transaction> loadTransactions() {

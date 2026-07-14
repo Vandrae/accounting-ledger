@@ -1,10 +1,21 @@
 package com.pluralsight;
 
-import java.time.*;
+import com.pluralsight.model.Transaction;
+import com.pluralsight.service.ReportService;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountingApp {
+
+    // Console Colors
+    public static final String GREEN = "\u001B[32m";
+    public static final String RED = "\u001B[31m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String RESET = "\u001B[0m";
+
     //allows user input
     public static Scanner input = new Scanner(System.in);
 
@@ -167,10 +178,6 @@ public class AccountingApp {
         //most recent list of transactions, newest first
         ArrayList<Transaction> transactions = FileManager.loadTransactionsSortedDesc();
 
-        LocalDate dateToday = LocalDate.now();
-        int todayMonth = dateToday.getMonthValue();
-        int todayYear = dateToday.getYear();
-
         System.out.println(" ");
         System.out.println("Reports Menu");
         System.out.println(" ");
@@ -196,12 +203,12 @@ public class AccountingApp {
         }
 
         switch (reportsSelection){
-            case 1 -> monthToDate(transactions, todayMonth,todayYear);
-            case 2 -> prevMonth(transactions,todayMonth,todayYear);
-            case 3 -> yearToDate(transactions, todayYear);
-            case 4 -> prevYear(transactions, todayYear);
-            case 5 -> vendorSearch(transactions);
-            case 6 -> customSearch(transactions);
+            case 1 -> ReportService.monthToDate(transactions);
+            case 2 -> ReportService.prevMonth(transactions);
+            case 3 -> ReportService.yearToDate(transactions);
+            case 4 -> ReportService.prevYear(transactions);
+            case 5 -> ReportService.vendorSearch(transactions, input);
+            case 6 -> ReportService.customSearch(transactions, input);
             case 0 -> {
                 System.out.println("Returning...");
                 return;
@@ -209,99 +216,6 @@ public class AccountingApp {
             default -> System.out.println("Not a valid option.");
         }
 
-    }
-
-    //display all transactions from the current month to today
-    public static void monthToDate(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
-        for (Transaction t : transactions) {
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
-
-            if (dateMonth == todayMonth && dateYear == todayYear) {
-                System.out.println(t);
-            }
-        }
-    }
-    //display all transactions from the previous month
-    public static void prevMonth(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
-        for (Transaction t : transactions) {
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
-
-            if (dateMonth == todayMonth - 1 && dateYear == todayYear) {
-                System.out.println(t);
-            }
-        }
-    }
-    //display all transactions from the current year to today
-    public static void yearToDate(ArrayList<Transaction> transactions, int todayYear){
-        for (Transaction t : transactions) {
-            int dateYear = t.getDateTime().getYear();
-
-            if (dateYear == todayYear) {
-                System.out.println(t);
-            }
-        }
-    }
-    //display all transactions from the previous year
-    public static void prevYear(ArrayList<Transaction> transactions, int todayYear){
-        for (Transaction t : transactions) {
-            int dateYear = t.getDateTime().getYear();
-
-            if (dateYear == todayYear - 1) {
-                System.out.println(t);
-            }
-        }
-    }
-    //display all transactions from a vendor that the user searches for
-    public static void vendorSearch(ArrayList<Transaction> transactions) {
-        System.out.print("Who is the Vendor? : ");
-        String reportVendor = input.nextLine();
-
-        for (Transaction t : transactions) {
-            if (t.getVendor().equalsIgnoreCase(reportVendor)) {
-                System.out.println(t);
-            }
-        }
-    }
-
-    // Custom search bonus
-    public static void customSearch(ArrayList<Transaction> transactions) {
-        System.out.print("Start Date (yyyy-MM-dd, leave blank to skip): ");
-        String startInput = input.nextLine().trim();
-        System.out.print("End Date (yyyy-MM-dd, leave blank to skip): ");
-        String endInput = input.nextLine().trim();
-        System.out.print("Description (leave blank to skip): ");
-        String descInput = input.nextLine().trim();
-        System.out.print("Vendor (leave blank to skip): ");
-        String vendorInput = input.nextLine().trim();
-        System.out.print("Amount (leave blank to skip): ");
-        String amountInput = input.nextLine().trim();
-
-        LocalDate startDate = null;
-        LocalDate endDate = null;
-        Double amount = null;
-
-        try {
-            if (!startInput.isEmpty()) startDate = LocalDate.parse(startInput);
-            if (!endInput.isEmpty()) endDate = LocalDate.parse(endInput);
-            if (!amountInput.isEmpty()) amount = Double.parseDouble(amountInput);
-        } catch (Exception e) {
-            System.out.println("One of your inputs wasn't valid. Please check the date/amount format and try again.");
-            return;
-        }
-
-        for (Transaction t : transactions) {
-            LocalDate tDate = t.getDateTime().toLocalDate();
-
-            if (startDate != null && tDate.isBefore(startDate)) continue;
-            if (endDate != null && tDate.isAfter(endDate)) continue;
-            if (!descInput.isEmpty() && !t.getDescription().toLowerCase().contains(descInput.toLowerCase())) continue;
-            if (!vendorInput.isEmpty() && !t.getVendor().equalsIgnoreCase(vendorInput)) continue;
-            if (amount != null && t.getAmount() != amount) continue;
-
-            System.out.println(t);
-        }
     }
 }
 

@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import com.pluralsight.model.Transaction;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;

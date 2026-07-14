@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import com.pluralsight.model.Transaction;
+
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Scanner;

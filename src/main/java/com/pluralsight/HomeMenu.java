@@ -29,7 +29,7 @@ public class HomeMenu {
             switch(menuSelection){
                 case "D" -> makeDeposit();
                 case "P" -> makePayment();
-                case "L" -> ledgerMenu();
+                case "L" -> LedgerMenu.ledgerMenu();
                 case "X" -> {
                     System.out.println("Thank you! Goodbye");
                     appRunning = false;

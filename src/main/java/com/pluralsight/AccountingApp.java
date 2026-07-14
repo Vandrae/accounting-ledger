@@ -24,36 +24,6 @@ public class AccountingApp {
         homeMenu();
     }
 
-
-    //method to be used in the home menu
-    public static void makeDeposit() {
-        String depositDescription;
-        LocalDateTime currentTime;
-        String depositVendor;
-        double depositAmount;
-
-        try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
-
-            //today's date and current time
-            currentTime = LocalDateTime.now();
-
-            //regardless if they enter negative or positive output will always be a positive
-            Transaction depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
-            FileManager.saveTransaction(depositTransaction);
-        } catch (Exception e) {
-            System.out.println("An error occurred");
-        }
-    }
-
     // Level 2 Menu
     public static void ledgerMenu() {
         //newest-first list of transactions, sorted by the repository

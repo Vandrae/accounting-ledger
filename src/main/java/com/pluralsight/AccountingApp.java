@@ -20,8 +20,7 @@ public class AccountingApp {
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
-        //loop that always runs menu
-        homeMenu();
+      HomeMenu.homeMenu();
     }
 
     // Level 2 Menu

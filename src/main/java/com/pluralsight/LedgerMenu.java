@@ -44,4 +44,13 @@ public class LedgerMenu {
             System.out.println(t);
         }
     }
+
+    //method to display all Deposits
+    public static void ledgerDeposit(ArrayList<Transaction> transactions) {
+        for (Transaction t : transactions) {
+            if (t.getAmount() > 0) {
+                System.out.println(t);
+            }
+        }
+    }
 }

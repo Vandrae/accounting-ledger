@@ -3,8 +3,11 @@ package com.pluralsight;
 import com.pluralsight.model.Transaction;
 
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class HomeMenu {
+    //allows user input
+    public static Scanner input = new Scanner(System.in);
 
     //First menu user sees
     public static void homeMenu() {

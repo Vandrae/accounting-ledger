@@ -23,18 +23,6 @@ public class AccountingApp {
       HomeMenu.homeMenu();
     }
 
-
-
-
-    //method to display all Payments
-    public static void ledgerPayment(ArrayList<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            if (t.getAmount() < 0) {
-                System.out.println(t);
-            }
-        }
-    }
-
     //Level 3 Menu
     public static void reportsMenu() {
 

@@ -4,8 +4,12 @@ import com.pluralsight.model.Transaction;
 import com.pluralsight.service.ReportService;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ReportsMenu {
+
+    //allows user input
+    public static Scanner input = new Scanner(System.in);
 
     //Level 3 Menu
     public static void reportsMenu() {

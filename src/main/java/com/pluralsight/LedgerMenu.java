@@ -32,7 +32,7 @@ public class LedgerMenu {
             case "A" -> ledgerAll(transactions);
             case "D" -> ledgerDeposit(transactions);
             case "P" -> ledgerPayment(transactions);
-            case "R" -> reportsMenu();
+            case "R" -> ReportsMenu.reportsMenu();
             case "H" -> {
                 System.out.println("Returning to the main menu...");
                 return;

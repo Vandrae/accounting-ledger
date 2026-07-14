@@ -16,9 +16,6 @@ public class AccountingApp {
     public static final String YELLOW = "\u001B[33m";
     public static final String RESET = "\u001B[0m";
 
-    //allows user input
-    public static Scanner input = new Scanner(System.in);
-
     public static void main(String[] args) {
       HomeMenu.homeMenu();
     }

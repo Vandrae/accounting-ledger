@@ -25,40 +25,6 @@ public class AccountingApp {
     }
 
 
-
-    //method to be used in the home menu
-    public static void makePayment() {
-        String depositDescription;
-        LocalDateTime currentTime;
-        String depositVendor;
-        double depositAmount;
-
-        try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
-
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
-
-            //today's date and current time
-            currentTime = LocalDateTime.now();
-
-            //if they enter a  negative it doesn't multiply a negative by a negative
-            if (depositAmount >= 0){
-                depositAmount *= -1;
-            }
-            Transaction paymentTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
-            FileManager.saveTransaction(paymentTransaction);
-        } catch (Exception e) {
-            System.out.println("An error occurred");
-        }
-    }
-
     //method to be used in the home menu
     public static void makeDeposit() {
         String depositDescription;

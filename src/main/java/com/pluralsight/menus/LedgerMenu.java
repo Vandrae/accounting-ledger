@@ -29,16 +29,22 @@ public class LedgerMenu {
         System.out.println("-------------------------------------");
         System.out.println(" ");
 
-        switch(ledgerSelection){
-            case "A" -> ledgerAll(transactions);
-            case "D" -> ledgerDeposit(transactions);
-            case "P" -> ledgerPayment(transactions);
-            case "R" -> ReportsMenu.reportsMenu();
-            case "H" -> {
-                System.out.println("Returning to the main menu...");
-                return;
+        //if the user inputs anything other than D,P,L or X the menu doesnt run
+        if (ledgerSelection.equalsIgnoreCase("A") || ledgerSelection.equalsIgnoreCase("D") ||
+                ledgerSelection.equalsIgnoreCase("P") || ledgerSelection.equalsIgnoreCase("R") ||
+                ledgerSelection.equalsIgnoreCase("H")
+        ){
+            switch(ledgerSelection){
+                case "A" -> ledgerAll(transactions);
+                case "D" -> ledgerDeposit(transactions);
+                case "P" -> ledgerPayment(transactions);
+                case "R" -> ReportsMenu.reportsMenu();
+                case "H" -> System.out.println("Returning to the main menu...");
             }
+        }else {
+            System.out.println("Enter a valid input!");
         }
+
 
     }
 

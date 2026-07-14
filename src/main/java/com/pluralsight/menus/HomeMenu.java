@@ -27,6 +27,7 @@ public class HomeMenu {
             System.out.println("-------------------------------------");
             System.out.println(" ");
 
+            //if the user inputs anything other than D,P,L or X the menu doesnt run
             if (menuSelection.equalsIgnoreCase("D") || menuSelection.equalsIgnoreCase("P") ||
                     menuSelection.equalsIgnoreCase("L") || menuSelection.equalsIgnoreCase("X")
             ){
@@ -42,9 +43,6 @@ public class HomeMenu {
             } else {
                 System.out.println("Enter a valid input!");
             }
-
-
-
         }
 
     }

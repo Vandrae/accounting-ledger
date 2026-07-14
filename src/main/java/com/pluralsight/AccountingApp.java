@@ -21,7 +21,8 @@ public class AccountingApp {
 
     //First menu user sees
     public static void homeMenu() {
-        while (true) {
+        boolean appRunning = true;
+        while (appRunning) {
             //Display Home Screen
             System.out.println(" ");
             System.out.println("Home Screen");
@@ -31,36 +32,18 @@ public class AccountingApp {
             System.out.println("L) Ledger");
             System.out.println("X) Exit");
             System.out.print("Pick an option from the menu above: ");
-            String menuSelection = input.nextLine();
+            String menuSelection = input.nextLine().toUpperCase();
             System.out.println("-------------------------------------");
             System.out.println(" ");
 
-
-
-
-            //try's to do this
-            try {
-
-                    //calls methods with code for each function
-                if (menuSelection.equalsIgnoreCase("D")) {
-                    makeDeposit();
-
-                } else if (menuSelection.equalsIgnoreCase("P")) {
-                    makePayment();
-
-                } else if (menuSelection.equalsIgnoreCase("L")) {
-                    ledgerMenu();
+            switch(menuSelection){
+                case "D" -> makeDeposit();
+                case "P" -> makePayment();
+                case "L" -> ledgerMenu();
+                case "X" -> {
+                    System.out.println("Thank you! Goodbye");
+                    appRunning = false;
                 }
-                //if x is ends program
-                else if (menuSelection.equalsIgnoreCase("X")) {
-                    break;
-                }
-
-               //if it cant do the try prints "An error occurred"
-            } catch (Exception e) {
-                System.out.println("An error occurred");
-                e.printStackTrace();
-
             }
 
         }
@@ -186,7 +169,8 @@ public class AccountingApp {
     public static void ledgerMenu() {
         //prints transactions to console
         ArrayList<Transaction> transactions = loadTransactions();
-        while (true) {
+        boolean appRunning = true;
+
             System.out.println(" ");
             System.out.println("Ledger Menu");
             System.out.println(" ");
@@ -196,27 +180,21 @@ public class AccountingApp {
             System.out.println("R) Reports");
             System.out.println("H) Home");
             System.out.print("Pick an option from the menu above: ");
-            String ledgerSelection = input.nextLine();
+            String ledgerSelection = input.nextLine().toUpperCase();
             System.out.println("-------------------------------------");
             System.out.println(" ");
 
-            //if statement that calls methods for specific jobs
-            if (ledgerSelection.equalsIgnoreCase("A")) {
-                ledgerAll(transactions);
-
-            } else if (ledgerSelection.equalsIgnoreCase("D")) {
-                ledgerDeposit(transactions);
-
-            } else if (ledgerSelection.equalsIgnoreCase("P")) {
-                ledgerPayment(transactions);
-
-            } else if (ledgerSelection.equalsIgnoreCase("R")) {
-                reportsMenu();
-
-            } else if (ledgerSelection.equalsIgnoreCase("H")) {
-                break;
+            switch(ledgerSelection){
+                case "A" -> ledgerAll(transactions);
+                case "D" -> ledgerDeposit(transactions);
+                case "P" -> ledgerPayment(transactions);
+                case "R" -> reportsMenu();
+                case "H" -> {
+                    System.out.println("Returning to the main menu...");
+                    return;
+                }
             }
-        }
+
     }
 
     //method to display all entries on the Ledger
@@ -252,7 +230,7 @@ public class AccountingApp {
         int todayMonth = dateToday.getMonthValue();
         int todayYear = dateToday.getYear();
 
-        while (true) {
+
             System.out.println(" ");
             System.out.println("Reports Menu");
             System.out.println(" ");
@@ -267,26 +245,18 @@ public class AccountingApp {
             System.out.println("-------------------------------------");
             System.out.println(" ");
 
-            if (reportsSelection == 1) {
-                monthToDate(transactions, todayMonth, todayYear);
-
-            } else if (reportsSelection == 2) {
-                prevMonth(transactions, todayMonth, todayYear);
-
-            } else if (reportsSelection == 3) {
-                yearToDate(transactions, todayYear);
-
-            } else if (reportsSelection == 4) {
-                prevYear(transactions, todayYear);
-
-            } else if (reportsSelection == 5) {
-                vendorSearch(transactions);
-
-            } else if (reportsSelection == 0) {
-                break;
+            switch (reportsSelection){
+                case 1 -> monthToDate(transactions, todayMonth,todayYear);
+                case 2 -> prevMonth(transactions,todayMonth,todayYear);
+                case 3 -> yearToDate(transactions, todayYear);
+                case 4 -> prevYear(transactions, todayYear);
+                case 5 -> vendorSearch(transactions);
+                case 0 -> {
+                    System.out.println("Returning...");
+                    return;
+                }
             }
 
-        }
     }
 
     //methods to be used in the reports menu

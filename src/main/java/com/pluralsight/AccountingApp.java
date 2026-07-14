@@ -1,11 +1,6 @@
 package com.pluralsight;
 
-import com.pluralsight.model.Transaction;
-import com.pluralsight.service.ReportService;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
+import static com.pluralsight.menus.HomeMenu.displayHomeMenu;
 
 public class AccountingApp {
 

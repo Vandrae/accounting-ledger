@@ -37,4 +37,11 @@ public class LedgerMenu {
         }
 
     }
+
+    //method to display all entries on the Ledger
+    public static void ledgerAll(ArrayList<Transaction> transactions) {
+        for (Transaction t : transactions) {
+            System.out.println(t);
+        }
+    }
 }

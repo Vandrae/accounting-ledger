@@ -53,4 +53,13 @@ public class LedgerMenu {
             }
         }
     }
+
+    //method to display all Payments
+    public static void ledgerPayment(ArrayList<Transaction> transactions) {
+        for (Transaction t : transactions) {
+            if (t.getAmount() < 0) {
+                System.out.println(t);
+            }
+        }
+    }
 }

@@ -42,6 +42,7 @@ public class ReportsMenu {
             return;
         }
 
+        //Validate User Inputs
         if (selectionText.equalsIgnoreCase("1") || selectionText.equalsIgnoreCase("2") ||
                 selectionText.equalsIgnoreCase("3") || selectionText.equalsIgnoreCase("4") ||
                 selectionText.equalsIgnoreCase("5") || selectionText.equalsIgnoreCase("6") ||

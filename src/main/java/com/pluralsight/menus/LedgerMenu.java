@@ -29,7 +29,7 @@ public class LedgerMenu {
         System.out.println("-------------------------------------");
         System.out.println(" ");
 
-        //if the user inputs anything other than D,P,L or X the menu doesnt run
+        //Validate User Inputs
         if (ledgerSelection.equalsIgnoreCase("A") || ledgerSelection.equalsIgnoreCase("D") ||
                 ledgerSelection.equalsIgnoreCase("P") || ledgerSelection.equalsIgnoreCase("R") ||
                 ledgerSelection.equalsIgnoreCase("H")

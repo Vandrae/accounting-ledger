@@ -4,7 +4,7 @@ import com.pluralsight.menus.HomeMenu;
 
 
 
-public class AccountingApp {
+public class CLIAccountingApp {
 
     // Console Colors
     public static final String GREEN = "\u001B[32m";

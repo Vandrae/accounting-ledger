@@ -55,9 +55,8 @@ public class HomeMenu {
         double depositAmount;
 
         try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
+            System.out.print("Enter a description: ");
+            String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
             depositVendor = input.nextLine();
 
@@ -76,6 +75,7 @@ public class HomeMenu {
             Transaction paymentTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
             FileManager.saveTransaction(paymentTransaction);
         } catch (Exception e) {
+            input.nextLine();
             System.out.println("An error occurred");
         }
     }
@@ -88,9 +88,8 @@ public class HomeMenu {
         double depositAmount;
 
         try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
+            System.out.print("Enter a description: ");
+            String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
             depositVendor = input.nextLine();
             //asks user to enter amount
@@ -105,6 +104,7 @@ public class HomeMenu {
             Transaction depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
             FileManager.saveTransaction(depositTransaction);
         } catch (Exception e) {
+            input.nextLine();
             System.out.println("An error occurred");
         }
     }

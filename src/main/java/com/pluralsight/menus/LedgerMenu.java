@@ -8,67 +8,39 @@ import java.util.Scanner;
 
 public class LedgerMenu {
 
-    public static Scanner input = new Scanner(System.in);
+    static Scanner input = HomeMenu.input;
+    static ReportsMenu reportsMenu = new ReportsMenu();
 
-    // Level 2 Menu
-    public static void ledgerMenu() {
-        //newest-first list of transactions, sorted by the repository
-        ArrayList<Transaction> transactions = FileManager.loadTransactionsSortedDesc();
-        boolean appRunning = true;
+    public static void displayLedgerMenu() {
 
-        System.out.println(" ");
-        System.out.println("Ledger Menu");
-        System.out.println(" ");
-        System.out.println("A) All");
-        System.out.println("D) Deposits");
-        System.out.println("P) Payments");
-        System.out.println("R) Reports");
-        System.out.println("H) Home");
-        System.out.print("Pick an option from the menu above: ");
-        String ledgerSelection = input.nextLine().toUpperCase();
-        System.out.println("-------------------------------------");
-        System.out.println(" ");
+        boolean inLedgerMenu = true;
+        while (inLedgerMenu) {
 
-        //Validate User Inputs
-        if (ledgerSelection.equalsIgnoreCase("A") || ledgerSelection.equalsIgnoreCase("D") ||
-                ledgerSelection.equalsIgnoreCase("P") || ledgerSelection.equalsIgnoreCase("R") ||
-                ledgerSelection.equalsIgnoreCase("H")
-        ){
-            switch(ledgerSelection){
-                case "A" -> ledgerAll(transactions);
-                case "D" -> ledgerDeposit(transactions);
-                case "P" -> ledgerPayment(transactions);
-                case "R" -> ReportsMenu.reportsMenu();
-                case "H" -> System.out.println("Returning to the main menu...");
-            }
-        }else {
-            System.out.println("Enter a valid input!");
-        }
+            ArrayList<Transaction> transactions = FileManager.loadTransactionsSortedDesc();
 
+            System.out.println(" ");
+            System.out.println("Ledger Menu");
+            System.out.println(" ");
+            System.out.println("A) All");
+            System.out.println("D) Deposits");
+            System.out.println("P) Payments");
+            System.out.println("R) Reports");
+            System.out.println("H) Home");
+            System.out.print("Pick an option from the menu above: ");
+            String selection = input.nextLine().toUpperCase();
+            System.out.println("-------------------------------------");
+            System.out.println(" ");
 
-    }
-
-    //method to display all entries on the Ledger
-    public static void ledgerAll(ArrayList<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            System.out.println(t);
-        }
-    }
-
-    //method to display all Deposits
-    public static void ledgerDeposit(ArrayList<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            if (t.getAmount() > 0) {
-                System.out.println(t);
-            }
-        }
-    }
-
-    //method to display all Payments
-    public static void ledgerPayment(ArrayList<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            if (t.getAmount() < 0) {
-                System.out.println(t);
+            switch (selection) {
+                case "A" -> transactions.forEach(System.out::println);
+                case "D" -> transactions.stream().filter(t -> t.getAmount() > 0).forEach(System.out::println);
+                case "P" -> transactions.stream().filter(t -> t.getAmount() < 0).forEach(System.out::println);
+                case "R" -> ReportsMenu.displayReportMenu();
+                case "H" -> {
+                    System.out.println("Returning to the main menu...");
+                    inLedgerMenu = false;
+                }
+                default -> System.out.println("Not a valid option.");
             }
         }
     }

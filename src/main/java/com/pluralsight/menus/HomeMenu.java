@@ -11,7 +11,7 @@ public class HomeMenu {
     //allows user input
     public static Scanner input = new Scanner(System.in);
 
-    //First menu user sees
+    //Create a home menu
     public static void homeMenu() {
         ConsoleDecorator.appHeader(
                 "Accounting Ledger",
@@ -26,6 +26,7 @@ public class HomeMenu {
                     "X) Exit"
             });
 
+            //create input validation that accepts only DPLX as valid options
             String menuSelection = askMenuOption("Choose an option", "DPLX");
 
             switch(menuSelection){
@@ -41,7 +42,7 @@ public class HomeMenu {
 
     }
 
-    //method to be used in the home menu
+    //create a method that allows users to make a payment
     public static void makePayment() {
         String depositDescription;
         LocalDateTime currentTime;
@@ -54,10 +55,9 @@ public class HomeMenu {
             depositVendor = askRequiredText("Vendor");
             depositAmount = askMoneyAmount("Amount");
 
-            //today's date and current time
             currentTime = LocalDateTime.now();
 
-            //if they enter a  negative it doesn't multiply a negative by a negative
+            //input validation that doesn't multiply a negative by a negative if one is entered
             if (depositAmount >= 0){
                 depositAmount *= -1;
             }
@@ -70,7 +70,7 @@ public class HomeMenu {
         }
     }
 
-    //method to be used in the home menu
+    //create a method that allows users to make a deposit
     public static void makeDeposit() {
         String depositDescription;
         LocalDateTime currentTime;
@@ -83,7 +83,6 @@ public class HomeMenu {
             depositVendor = askRequiredText("Vendor");
             depositAmount = askMoneyAmount("Amount");
 
-            //today's date and current time
             currentTime = LocalDateTime.now();
 
             //regardless if they enter negative or positive output will always be a positive
@@ -96,6 +95,7 @@ public class HomeMenu {
         }
     }
 
+    //create input validation that makes sure menu option is a length of 1 and contains a valid answer
     private static String askMenuOption(String prompt, String validOptions) {
         while (true) {
             ConsoleDecorator.prompt(prompt);
@@ -110,6 +110,7 @@ public class HomeMenu {
         }
     }
 
+    //create input validation that makes sure input is not a blank space
     private static String askRequiredText(String prompt) {
         while (true) {
             ConsoleDecorator.prompt(prompt);
@@ -123,6 +124,7 @@ public class HomeMenu {
         }
     }
 
+    //create input validation that asks for money in the correct format
     private static double askMoneyAmount(String prompt) {
         while (true) {
             ConsoleDecorator.prompt(prompt);

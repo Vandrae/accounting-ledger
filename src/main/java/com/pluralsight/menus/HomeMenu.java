@@ -49,15 +49,10 @@ public class HomeMenu {
         double depositAmount;
 
         try {
-            System.out.print("Enter a description: ");
-            depositDescription = input.nextLine();
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
-
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
+            ConsoleDecorator.section("Payment");
+            depositDescription = askRequiredText("Description");
+            depositVendor = askRequiredText("Vendor");
+            depositAmount = askMoneyAmount("Amount");
 
             //today's date and current time
             currentTime = LocalDateTime.now();
@@ -68,9 +63,10 @@ public class HomeMenu {
             }
             Transaction paymentTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
             FileManager.saveTransaction(paymentTransaction);
+            ConsoleDecorator.success("Saved payment: " + depositVendor + " for "
+                    + ConsoleDecorator.formatMoney(depositAmount));
         } catch (Exception e) {
-            input.nextLine();
-            System.out.println("An error occurred");
+            ConsoleDecorator.notice("An error occurred while saving the payment.");
         }
     }
 
@@ -82,14 +78,10 @@ public class HomeMenu {
         double depositAmount;
 
         try {
-            System.out.print("Enter a description: ");
-            depositDescription = input.nextLine();
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
+            ConsoleDecorator.section("Deposit");
+            depositDescription = askRequiredText("Description");
+            depositVendor = askRequiredText("Vendor");
+            depositAmount = askMoneyAmount("Amount");
 
             //today's date and current time
             currentTime = LocalDateTime.now();
@@ -97,9 +89,10 @@ public class HomeMenu {
             //regardless if they enter negative or positive output will always be a positive
             Transaction depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
             FileManager.saveTransaction(depositTransaction);
+            ConsoleDecorator.success("Saved deposit: " + depositVendor + " for "
+                    + ConsoleDecorator.formatMoney(Math.abs(depositAmount)));
         } catch (Exception e) {
-            input.nextLine();
-            System.out.println("An error occurred");
+            ConsoleDecorator.notice("An error occurred while saving the deposit.");
         }
     }
 
@@ -114,6 +107,36 @@ public class HomeMenu {
             }
 
             ConsoleDecorator.notice("Please enter one of these options: " + validOptions);
+        }
+    }
+
+    private static String askRequiredText(String prompt) {
+        while (true) {
+            ConsoleDecorator.prompt(prompt);
+            String answer = input.nextLine().trim();
+
+            if (!answer.isBlank()) {
+                return answer;
+            }
+
+            ConsoleDecorator.notice(prompt + " cannot be blank.");
+        }
+    }
+
+    private static double askMoneyAmount(String prompt) {
+        while (true) {
+            ConsoleDecorator.prompt(prompt);
+            String answer = input.nextLine().trim().replace("$", "").replace(",", "");
+
+            try {
+                double amount = Double.parseDouble(answer);
+                if (amount != 0) {
+                    return amount;
+                }
+                ConsoleDecorator.notice("Amount must be more than 0.");
+            } catch (Exception e) {
+                ConsoleDecorator.notice("Please enter a valid amount, like 42.50.");
+            }
         }
     }
 

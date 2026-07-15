@@ -1,6 +1,7 @@
 package com.pluralsight.service;
 
 import com.pluralsight.model.Transaction;
+import com.pluralsight.util.ConsoleDecorator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class ReportService {
      */
     public static void monthToDate(ArrayList<Transaction> transactions) {
         LocalDate today = LocalDate.now();
+        ArrayList<Transaction> matches = new ArrayList<>();
 
         for (Transaction t : transactions) {
             LocalDate tDate = t.getDateTime().toLocalDate();
@@ -25,9 +27,11 @@ public class ReportService {
                     && tDate.getYear() == today.getYear();
 
             if (sameMonthAndYear && !tDate.isAfter(today)) {
-                System.out.println(t);
+                matches.add(t);
             }
         }
+
+        ConsoleDecorator.transactionTable("Month To Date", matches);
     }
 
     /* display all transactions from the previous month
@@ -37,61 +41,75 @@ public class ReportService {
      */
     public static void prevMonth(ArrayList<Transaction> transactions) {
         LocalDate targetMonth = LocalDate.now().minusMonths(1);
+        ArrayList<Transaction> matches = new ArrayList<>();
 
         for (Transaction t : transactions) {
             LocalDate tDate = t.getDateTime().toLocalDate();
             if (tDate.getMonthValue() == targetMonth.getMonthValue()
                     && tDate.getYear() == targetMonth.getYear()) {
-                System.out.println(t);
+                matches.add(t);
             }
         }
+
+        ConsoleDecorator.transactionTable("Previous Month", matches);
     }
 
     //display all transactions from the current year to today
     public static void yearToDate(ArrayList<Transaction> transactions) {
         int todayYear = LocalDate.now().getYear();
+        ArrayList<Transaction> matches = new ArrayList<>();
 
         for (Transaction t : transactions) {
             if (t.getDateTime().getYear() == todayYear) {
-                System.out.println(t);
+                matches.add(t);
             }
         }
+
+        ConsoleDecorator.transactionTable("Year To Date", matches);
     }
 
     //display all transactions from the previous year
     public static void prevYear(ArrayList<Transaction> transactions) {
         int todayYear = LocalDate.now().getYear();
+        ArrayList<Transaction> matches = new ArrayList<>();
 
         for (Transaction t : transactions) {
             if (t.getDateTime().getYear() == todayYear - 1) {
-                System.out.println(t);
+                matches.add(t);
             }
         }
+
+        ConsoleDecorator.transactionTable("Previous Year", matches);
     }
 
     //display all transactions from a vendor that the user searches for
     public static void vendorSearch(ArrayList<Transaction> transactions, Scanner input) {
-        System.out.print("Who is the Vendor? : ");
+        ConsoleDecorator.section("Vendor Search");
+        ConsoleDecorator.prompt("Vendor name");
         String reportVendor = input.nextLine();
+        ArrayList<Transaction> matches = new ArrayList<>();
 
         for (Transaction t : transactions) {
-            if (t.getVendor().equalsIgnoreCase(reportVendor)) {
-                System.out.println(t);
+            if (t.getVendor().toLowerCase().contains(reportVendor.toLowerCase())) {
+                matches.add(t);
             }
         }
+
+        ConsoleDecorator.transactionTable("Vendor Search: " + reportVendor, matches);
     }
 
     // Custom Search - prompt for every field, skip filters left blank.
     public static void customSearch(ArrayList<Transaction> transactions, Scanner input) {
-        System.out.print("Start Date (yyyy-MM-dd, leave blank to skip): ");
+        ConsoleDecorator.section("Custom Search");
+        ConsoleDecorator.prompt("Start Date (yyyy-MM-dd, leave blank to skip)");
         String startInput = input.nextLine().trim();
-        System.out.print("End Date (yyyy-MM-dd, leave blank to skip): ");
+        ConsoleDecorator.prompt("End Date (yyyy-MM-dd, leave blank to skip)");
         String endInput = input.nextLine().trim();
-        System.out.print("Description (leave blank to skip): ");
+        ConsoleDecorator.prompt("Description (leave blank to skip)");
         String descInput = input.nextLine().trim();
-        System.out.print("Vendor (leave blank to skip): ");
+        ConsoleDecorator.prompt("Vendor (leave blank to skip)");
         String vendorInput = input.nextLine().trim();
-        System.out.print("Amount (leave blank to skip): ");
+        ConsoleDecorator.prompt("Amount (leave blank to skip)");
         String amountInput = input.nextLine().trim();
 
         LocalDate startDate = null;
@@ -103,10 +121,11 @@ public class ReportService {
             if (!endInput.isEmpty()) endDate = LocalDate.parse(endInput);
             if (!amountInput.isEmpty()) amount = Double.parseDouble(amountInput);
         } catch (Exception e) {
-            System.out.println("One of your inputs wasn't valid. Please check the date/amount format and try again.");
+            ConsoleDecorator.notice("One of your inputs was not valid. Please check the date/amount format and try again.");
             return;
         }
 
+        ArrayList<Transaction> matches = new ArrayList<>();
         for (Transaction t : transactions) {
             LocalDate tDate = t.getDateTime().toLocalDate();
 
@@ -116,7 +135,9 @@ public class ReportService {
             if (!vendorInput.isEmpty() && !t.getVendor().equalsIgnoreCase(vendorInput)) continue;
             if (amount != null && t.getAmount() != amount) continue;
 
-            System.out.println(t);
+            matches.add(t);
         }
+
+        ConsoleDecorator.transactionTable("Custom Search Results", matches);
     }
 }

@@ -4,380 +4,764 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountingApp {
 
-    // Console Colors
+    // Console colors
     public static final String GREEN = "\u001B[32m";
     public static final String RED = "\u001B[31m";
     public static final String BLUE = "\u001B[34m";
     public static final String YELLOW = "\u001B[33m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String BOLD = "\u001B[1m";
     public static final String RESET = "\u001B[0m";
 
-    //allows user input
+    // File location
+    public static final String TRANSACTION_FILE =
+            "src/main/resources/transactions.csv";
+
+    // User input
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
-        //loop that always runs menu
+        displayWelcomeScreen();
         homeMenu();
     }
 
+    // Welcome screen
+    public static void displayWelcomeScreen() {
+        System.out.println();
+        System.out.println(BLUE + BOLD);
+        System.out.println("======================================================");
+        System.out.println("              PERSONAL ACCOUNTING LEDGER");
+        System.out.println("======================================================" + RESET);
+        System.out.println(
+                GREEN + "        Manage your money with confidence!" + RESET);
+        System.out.println(
+                CYAN + "        Today's Date: " + LocalDate.now() + RESET);
+        System.out.println(BLUE
+                + "======================================================"
+                + RESET);
+    }
 
-    //First menu user sees
+    // Home menu
     public static void homeMenu() {
         while (true) {
-
             ArrayList<Transaction> transactions = loadTransactions();
-            double currentBalance = getBalance(transactions);
 
-            System.out.println();
-            System.out.println(BLUE + "========================================");
-            System.out.println("         PERSONAL ACCOUNTING APP");
-            System.out.println("========================================" + RESET);
-            System.out.printf(GREEN + "Current Balance: $%.2f%n" + RESET,
-                    currentBalance);
-            System.out.println("----------------------------------------");
-            System.out.println("[D] Add Deposit");
-            System.out.println("[P] Make Payment");
-            System.out.println("[L] View Ledger");
-            System.out.println("[X] Exit");
-            System.out.println("----------------------------------------");
-            System.out.print("Choose an option: ");
+            displayHomeMenu(transactions);
 
-            String menuSelection = input.nextLine();
+            String menuSelection = input.nextLine().trim();
 
-            try {
-                if (menuSelection.equalsIgnoreCase("D")) {
+            switch (menuSelection.toUpperCase()) {
+                case "D":
                     makeDeposit();
-
-                } else if (menuSelection.equalsIgnoreCase("P")) {
-                    makePayment();
-
-                } else if (menuSelection.equalsIgnoreCase("L")) {
-                    ledgerMenu();
-
-                } else if (menuSelection.equalsIgnoreCase("X")) {
-                    System.out.println(
-                            YELLOW + "Thank you for using the Accounting App!"
-                                    + RESET);
                     break;
 
-                } else {
-                    System.out.println(
-                            RED + "Invalid option. Please try again." + RESET);
-                }
+                case "P":
+                    makePayment();
+                    break;
 
-            } catch (Exception e) {
-                System.out.println(
-                        RED + "An error occurred. Please try again." + RESET);
+                case "L":
+                    ledgerMenu();
+                    break;
+
+                case "X":
+                    displayGoodbyeScreen();
+                    return;
+
+                default:
+                    displayError(
+                            "Invalid option. Please choose D, P, L, or X.");
             }
         }
-
-
     }
-    //loadTransactions methods is responsible for reading the
-    //transaction.cvs file and returning an array with the most up-to-date list
+
+    // Displays the home screen
+    public static void displayHomeMenu(
+            ArrayList<Transaction> transactions) {
+
+        double currentBalance = getBalance(transactions);
+        int depositCount = countDeposits(transactions);
+        int paymentCount = countPayments(transactions);
+
+        System.out.println();
+        System.out.println(BLUE + BOLD
+                + "===================== HOME MENU ====================="
+                + RESET);
+
+        if (currentBalance >= 0) {
+            System.out.printf(
+                    GREEN + " Current Balance: $%,.2f%n" + RESET,
+                    currentBalance);
+        } else {
+            System.out.printf(
+                    RED + " Current Balance: -$%,.2f%n" + RESET,
+                    Math.abs(currentBalance));
+        }
+
+        System.out.println(CYAN
+                + " Total Transactions: " + transactions.size()
+                + " | Deposits: " + depositCount
+                + " | Payments: " + paymentCount
+                + RESET);
+
+        System.out.println(
+                "-----------------------------------------------------");
+        System.out.println(" [D] Add Deposit");
+        System.out.println(" [P] Make Payment");
+        System.out.println(" [L] View Ledger");
+        System.out.println(" [X] Exit");
+        System.out.println(BLUE
+                + "====================================================="
+                + RESET);
+        System.out.print(YELLOW + "Choose an option: " + RESET);
+    }
+
+    // Loads transactions from the CSV file
     public static ArrayList<Transaction> loadTransactions() {
-        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
         try {
-            //declare file reader so we don't have to keep declaring it though out program
-            //reads from this specific csv file
-            FileReader fileReader = new FileReader("src/main/resources/transactions.csv");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String t;
+            FileReader fileReader = new FileReader(TRANSACTION_FILE);
+            BufferedReader bufferedReader =
+                    new BufferedReader(fileReader);
 
-            //while the line isn't empty print it
-            while ((t = bufferedReader.readLine()) != null) {
+            String line;
 
-                String[] entry = t.split("\\|");
-                LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(entry[0]), LocalTime.parse(entry[1]));
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] entry = line.split("\\|");
+
+                if (entry.length < 5) {
+                    continue;
+                }
+
+                LocalDateTime dateTime = LocalDateTime.of(
+                        LocalDate.parse(entry[0]),
+                        java.time.LocalTime.parse(entry[1])
+                );
+
                 String description = entry[2];
                 String vendor = entry[3];
                 double amount = Double.parseDouble(entry[4]);
-                transactions.add(new Transaction(dateTime, description, vendor, amount));
 
+                transactions.add(
+                        new Transaction(
+                                dateTime,
+                                description,
+                                vendor,
+                                amount
+                        )
+                );
             }
+
             bufferedReader.close();
 
         } catch (Exception e) {
-            System.out.println("An error occurred");
+            displayError("Unable to load the transaction file.");
         }
+
         return transactions;
     }
 
-    //method to be used in the home menu
+    // Makes a payment
     public static void makePayment() {
-        String depositDescription;
-        LocalDateTime currentTime;
-        String depositVendor;
-        double depositAmount;
-        Transaction depositTransaction = null;
+        System.out.println();
+        printSectionHeader("MAKE A PAYMENT");
+
         try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
+            System.out.print("Enter a description: ");
+            String description = input.nextLine().trim();
 
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
+            System.out.print("Enter the vendor: ");
+            String vendor = input.nextLine().trim();
 
-            //today's date and current time
-            currentTime = LocalDateTime.now();
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = currentTime.format(dateTimeFormatter);
+            double amount = readPositiveAmount("Enter the payment amount: $");
 
+            LocalDateTime currentTime = LocalDateTime.now();
 
-            //if they enter a  negative it doesn't multiply a negative by a negative
-            if (depositAmount >= 0){
-                depositAmount *= -1;
-           }
-            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor,depositAmount);
+            Transaction paymentTransaction =
+                    new Transaction(
+                            currentTime,
+                            description,
+                            vendor,
+                            -Math.abs(amount)
+                    );
 
-            FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv", true);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            String line;
-            bufferedWriter.write(String.valueOf(depositTransaction));
-            bufferedWriter.newLine();
-            bufferedWriter.close();
+            saveTransaction(paymentTransaction);
+
+            System.out.println();
+            System.out.println(GREEN + BOLD
+                    + "Payment recorded successfully!" + RESET);
+            System.out.printf(
+                    YELLOW + "Amount Paid: $%,.2f%n" + RESET,
+                    Math.abs(amount));
+            System.out.println(
+                    CYAN + "Vendor: " + vendor + RESET);
+
         } catch (Exception e) {
-            System.out.println("An error occurred");
+            displayError(
+                    "The payment could not be recorded. Please try again.");
         }
-
-
     }
-    //method to be used in the home menu
+
+    // Adds a deposit
     public static void makeDeposit() {
-        String depositDescription;
-        LocalDateTime currentTime;
-        String depositVendor;
-        double depositAmount;
-        Transaction depositTransaction = null;
+        System.out.println();
+        printSectionHeader("ADD A DEPOSIT");
+
         try {
-            System.out.print("enter a description: ");
-            depositDescription = input.nextLine();
-            //asks user to enter Vendor
-            System.out.print("Who is the Vendor? : ");
-            depositVendor = input.nextLine();
-            //asks user to enter amount
-            System.out.print("What is the amount? : ");
-            depositAmount = input.nextDouble();
-            input.nextLine();
+            System.out.print("Enter a description: ");
+            String description = input.nextLine().trim();
 
-            //today's date and current time
-            currentTime = LocalDateTime.now();
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = currentTime.format(dateTimeFormatter);
+            System.out.print("Enter the source or vendor: ");
+            String vendor = input.nextLine().trim();
 
+            double amount = readPositiveAmount("Enter the deposit amount: $");
 
-            //regardless if they enter negative or positive output will always be a positive
-            depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
+            LocalDateTime currentTime = LocalDateTime.now();
 
-            FileWriter fileWriter = new FileWriter("src/main/resources/transactions.csv", true);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            String line;
-            bufferedWriter.write(String.valueOf(depositTransaction));
-            bufferedWriter.newLine();
-            bufferedWriter.close();
+            Transaction depositTransaction =
+                    new Transaction(
+                            currentTime,
+                            description,
+                            vendor,
+                            Math.abs(amount)
+                    );
+
+            saveTransaction(depositTransaction);
+
+            System.out.println();
+            System.out.println(GREEN + BOLD
+                    + "Deposit added successfully!" + RESET);
+            System.out.printf(
+                    GREEN + "Amount Deposited: $%,.2f%n" + RESET,
+                    Math.abs(amount));
+            System.out.println(
+                    CYAN + "Source: " + vendor + RESET);
+
         } catch (Exception e) {
-            System.out.println("An error occurred");
+            displayError(
+                    "The deposit could not be saved. Please try again.");
         }
-
-
     }
 
-    // Level 2 Menu
+    // Saves one transaction to the CSV file
+    public static void saveTransaction(Transaction transaction)
+            throws Exception {
+
+        FileWriter fileWriter =
+                new FileWriter(TRANSACTION_FILE, true);
+
+        BufferedWriter bufferedWriter =
+                new BufferedWriter(fileWriter);
+
+        bufferedWriter.write(transaction.toString());
+        bufferedWriter.newLine();
+        bufferedWriter.close();
+    }
+
+    // Ledger menu
     public static void ledgerMenu() {
-        //prints transactions to console
-        ArrayList<Transaction> transactions = loadTransactions();
         while (true) {
-            System.out.println(" ");
-            System.out.println("Ledger Menu");
-            System.out.println(" ");
-            System.out.println("A) All");
-            System.out.println("D) Deposits");
-            System.out.println("P) Payments");
-            System.out.println("R) Reports");
-            System.out.println("H) Home");
-            System.out.print("Pick an option from the menu above: ");
-            String ledgerSelection = input.nextLine();
-            System.out.println("-------------------------------------");
-            System.out.println(" ");
+            ArrayList<Transaction> transactions = loadTransactions();
 
-            //if statement that calls methods for specific jobs
-            if (ledgerSelection.equalsIgnoreCase("A")) {
-                ledgerAll(transactions);
+            System.out.println();
+            System.out.println(PURPLE + BOLD
+                    + "==================== LEDGER MENU ===================="
+                    + RESET);
+            System.out.println(" [A] View All Transactions");
+            System.out.println(" [D] View Deposits");
+            System.out.println(" [P] View Payments");
+            System.out.println(" [R] View Reports");
+            System.out.println(" [H] Return Home");
+            System.out.println(PURPLE
+                    + "====================================================="
+                    + RESET);
+            System.out.print(YELLOW + "Choose an option: " + RESET);
 
-            } else if (ledgerSelection.equalsIgnoreCase("D")) {
-                ledgerDeposit(transactions);
+            String ledgerSelection = input.nextLine().trim();
 
-            } else if (ledgerSelection.equalsIgnoreCase("P")) {
-                ledgerPayment(transactions);
+            switch (ledgerSelection.toUpperCase()) {
+                case "A":
+                    ledgerAll(transactions);
+                    break;
 
-            } else if (ledgerSelection.equalsIgnoreCase("R")) {
-                reportsMenu();
+                case "D":
+                    ledgerDeposit(transactions);
+                    break;
 
-            } else if (ledgerSelection.equalsIgnoreCase("H")) {
-                break;
+                case "P":
+                    ledgerPayment(transactions);
+                    break;
+
+                case "R":
+                    reportsMenu();
+                    break;
+
+                case "H":
+                    return;
+
+                default:
+                    displayError(
+                            "Invalid option. Please choose A, D, P, R, or H.");
             }
         }
     }
 
-    //method to display all entries on the Ledger
-    public static void ledgerAll(ArrayList<Transaction> transactions) {
-        for (int i = 0; i < transactions.size(); i++) {
-            System.out.println(transactions.get(i).toString());
+    // Displays all transactions
+    public static void ledgerAll(
+            ArrayList<Transaction> transactions) {
+
+        printSectionHeader("ALL TRANSACTIONS");
+
+        if (transactions.isEmpty()) {
+            displayNoResults("No transactions were found.");
+            return;
         }
+
+        for (Transaction transaction : transactions) {
+            printTransaction(transaction);
+        }
+
+        printTransactionSummary(transactions);
     }
-    //method to display all Deposits
-    public static void ledgerDeposit(ArrayList<Transaction> transactions) {
-        for (int i = 0; i < transactions.size(); i++) {
-            if (transactions.get(i).getAmount() > 0) {
-                System.out.println(transactions.get(i).toString());
+
+    // Displays deposits
+    public static void ledgerDeposit(
+            ArrayList<Transaction> transactions) {
+
+        printSectionHeader("DEPOSITS");
+
+        int resultCount = 0;
+        double total = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() > 0) {
+                printTransaction(transaction);
+                total += transaction.getAmount();
+                resultCount++;
             }
         }
-    }
-    //method to display all Payments
-    public static void ledgerPayment(ArrayList<Transaction> transactions) {
-        for (int i = 0; i < transactions.size(); i++) {
-            if (transactions.get(i).getAmount() < 0) {
-                System.out.println(transactions.get(i).toString());
-            }
+
+        if (resultCount == 0) {
+            displayNoResults("No deposits were found.");
+        } else {
+            System.out.println(GREEN
+                    + "-----------------------------------------------------"
+                    + RESET);
+            System.out.printf(
+                    GREEN + BOLD
+                            + "Total Deposits: $%,.2f | Entries: %d%n"
+                            + RESET,
+                    total,
+                    resultCount);
         }
     }
 
-    //Level 3 Menu
+    // Displays payments
+    public static void ledgerPayment(
+            ArrayList<Transaction> transactions) {
+
+        printSectionHeader("PAYMENTS");
+
+        int resultCount = 0;
+        double total = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() < 0) {
+                printTransaction(transaction);
+                total += Math.abs(transaction.getAmount());
+                resultCount++;
+            }
+        }
+
+        if (resultCount == 0) {
+            displayNoResults("No payments were found.");
+        } else {
+            System.out.println(RED
+                    + "-----------------------------------------------------"
+                    + RESET);
+            System.out.printf(
+                    RED + BOLD
+                            + "Total Payments: $%,.2f | Entries: %d%n"
+                            + RESET,
+                    total,
+                    resultCount);
+        }
+    }
+
+    // Reports menu
     public static void reportsMenu() {
-
-        //getting most recent list of transactions
-        ArrayList<Transaction> transactions = loadTransactions();
-
-        LocalDate dateToday = LocalDate.now();
-        int todayMonth = dateToday.getMonthValue();
-        int todayYear = dateToday.getYear();
-
         while (true) {
-            System.out.println(" ");
-            System.out.println("Reports Menu");
-            System.out.println(" ");
-            System.out.println("1) Month To Date");
-            System.out.println("2) Previous Month");
-            System.out.println("3) Year to Date");
-            System.out.println("4) Previous Year");
-            System.out.println("5) Search by Vendor");
-            System.out.println("0) Back");
-            System.out.print("Pick an option from the menu above: ");
-            int reportsSelection = input.nextInt();
-            System.out.println("-------------------------------------");
-            System.out.println(" ");
+            ArrayList<Transaction> transactions = loadTransactions();
 
-            if (reportsSelection == 1) {
-                monthToDate(transactions, todayMonth, todayYear);
+            LocalDate today = LocalDate.now();
+            int todayMonth = today.getMonthValue();
+            int todayYear = today.getYear();
 
-            } else if (reportsSelection == 2) {
-                prevMonth(transactions, todayMonth, todayYear);
+            System.out.println();
+            System.out.println(BLUE + BOLD
+                    + "==================== REPORTS MENU ==================="
+                    + RESET);
+            System.out.println(" [1] Month To Date");
+            System.out.println(" [2] Previous Month");
+            System.out.println(" [3] Year To Date");
+            System.out.println(" [4] Previous Year");
+            System.out.println(" [5] Search By Vendor");
+            System.out.println(" [0] Return To Ledger");
+            System.out.println(BLUE
+                    + "====================================================="
+                    + RESET);
+            System.out.print(YELLOW + "Choose an option: " + RESET);
 
-            } else if (reportsSelection == 3) {
-                yearToDate(transactions, todayYear);
+            String reportsSelection = input.nextLine().trim();
 
-            } else if (reportsSelection == 4) {
-                prevYear(transactions, todayYear);
+            switch (reportsSelection) {
+                case "1":
+                    monthToDate(
+                            transactions,
+                            todayMonth,
+                            todayYear);
+                    break;
 
-            } else if (reportsSelection == 5) {
-                vendorSearch(transactions);
+                case "2":
+                    prevMonth(transactions);
+                    break;
 
-            } else if (reportsSelection == 0) {
-                break;
-            }
+                case "3":
+                    yearToDate(transactions, todayYear);
+                    break;
 
-        }
-    }
+                case "4":
+                    prevYear(transactions, todayYear);
+                    break;
 
-    //methods to be used in the reports menu
-    //need to call todayMonth in the method like transactions with the data type  so it can be used from reportsMenu
-    //display all transactions from the current month to today
-    public static void monthToDate(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
+                case "5":
+                    vendorSearch(transactions);
+                    break;
 
-        for (Transaction t : transactions) {
+                case "0":
+                    return;
 
-            //getting the date and time of the current transaction
-            LocalDate dateToday = LocalDate.now();
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
-
-            // comparing the current transaction to today's date and time
-            if (dateMonth == todayMonth && dateYear == todayYear) {
-                System.out.println(t);
-            }
-
-        }
-    }
-    //display all transactions from the previous month
-    public static void prevMonth(ArrayList<Transaction> transactions, int todayMonth, int todayYear){
-        for (Transaction t : transactions) {
-
-            LocalDate dateToday = LocalDate.now();
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
-
-            // prints last month's transactions
-            if (dateMonth == todayMonth - 1 && dateYear == todayYear) {
-                System.out.println(t);
-            }
-
-        }
-    }
-    //display all transactions from the current year to today
-    public static void yearToDate(ArrayList<Transaction> transactions, int todayYear){
-        for (Transaction t : transactions) {
-
-            LocalDate dateToday = LocalDate.now();
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
-
-            // prints this year's transactions
-            if (dateYear == todayYear) {
-                System.out.println(t);
+                default:
+                    displayError(
+                            "Invalid option. Please select a number from 0 to 5.");
             }
         }
     }
-    //display all transactions from the previous year
-    public static void prevYear(ArrayList<Transaction> transactions, int todayYear){
-        for (Transaction t : transactions) {
 
-            LocalDate dateToday = LocalDate.now();
-            int dateMonth = t.getDateTime().getMonthValue();
-            int dateYear = t.getDateTime().getYear();
+    // Displays current month transactions
+    public static void monthToDate(
+            ArrayList<Transaction> transactions,
+            int todayMonth,
+            int todayYear) {
 
-            // prints last year's transactions
-            if (dateYear == todayYear - 1) {
-                System.out.println(t);
+        printSectionHeader("MONTH TO DATE");
+
+        ArrayList<Transaction> results = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            int transactionMonth =
+                    transaction.getDateTime().getMonthValue();
+
+            int transactionYear =
+                    transaction.getDateTime().getYear();
+
+            if (transactionMonth == todayMonth
+                    && transactionYear == todayYear) {
+
+                results.add(transaction);
+                printTransaction(transaction);
+            }
+        }
+
+        displayReportSummary(results);
+    }
+
+    // Displays previous month transactions
+    public static void prevMonth(
+            ArrayList<Transaction> transactions) {
+
+        YearMonth previousMonth =
+                YearMonth.now().minusMonths(1);
+
+        printSectionHeader(
+                "PREVIOUS MONTH - "
+                        + previousMonth.getMonth()
+                        + " "
+                        + previousMonth.getYear());
+
+        ArrayList<Transaction> results = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            int transactionMonth =
+                    transaction.getDateTime().getMonthValue();
+
+            int transactionYear =
+                    transaction.getDateTime().getYear();
+
+            if (transactionMonth == previousMonth.getMonthValue()
+                    && transactionYear == previousMonth.getYear()) {
+
+                results.add(transaction);
+                printTransaction(transaction);
+            }
+        }
+
+        displayReportSummary(results);
+    }
+
+    // Displays current year transactions
+    public static void yearToDate(
+            ArrayList<Transaction> transactions,
+            int todayYear) {
+
+        printSectionHeader("YEAR TO DATE - " + todayYear);
+
+        ArrayList<Transaction> results = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getDateTime().getYear() == todayYear) {
+                results.add(transaction);
+                printTransaction(transaction);
+            }
+        }
+
+        displayReportSummary(results);
+    }
+
+    // Displays previous year transactions
+    public static void prevYear(
+            ArrayList<Transaction> transactions,
+            int todayYear) {
+
+        int previousYear = todayYear - 1;
+
+        printSectionHeader("PREVIOUS YEAR - " + previousYear);
+
+        ArrayList<Transaction> results = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getDateTime().getYear() == previousYear) {
+                results.add(transaction);
+                printTransaction(transaction);
+            }
+        }
+
+        displayReportSummary(results);
+    }
+
+    // Searches transactions by vendor
+    public static void vendorSearch(
+            ArrayList<Transaction> transactions) {
+
+        System.out.println();
+        printSectionHeader("VENDOR SEARCH");
+
+        System.out.print("Enter the vendor name: ");
+        String reportVendor = input.nextLine().trim();
+
+        if (reportVendor.isEmpty()) {
+            displayError("Vendor name cannot be empty.");
+            return;
+        }
+
+        ArrayList<Transaction> results = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getVendor()
+                    .toLowerCase()
+                    .contains(reportVendor.toLowerCase())) {
+
+                results.add(transaction);
+                printTransaction(transaction);
+            }
+        }
+
+        if (results.isEmpty()) {
+            displayNoResults(
+                    "No transactions found for vendor: "
+                            + reportVendor);
+        } else {
+            displayReportSummary(results);
+        }
+    }
+
+    // Calculates the current balance
+    public static double getBalance(
+            ArrayList<Transaction> transactions) {
+
+        double balance = 0;
+
+        for (Transaction transaction : transactions) {
+            balance += transaction.getAmount();
+        }
+
+        return balance;
+    }
+
+    // Counts deposits
+    public static int countDeposits(
+            ArrayList<Transaction> transactions) {
+
+        int count = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() > 0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Counts payments
+    public static int countPayments(
+            ArrayList<Transaction> transactions) {
+
+        int count = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() < 0) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Reads and validates a positive amount
+    public static double readPositiveAmount(String message) {
+        while (true) {
+            System.out.print(message);
+            String amountText = input.nextLine().trim();
+
+            try {
+                double amount = Double.parseDouble(amountText);
+
+                if (amount <= 0) {
+                    displayError(
+                            "Amount must be greater than zero.");
+                } else {
+                    return amount;
+                }
+
+            } catch (NumberFormatException e) {
+                displayError(
+                        "Please enter a valid number, such as 25.50.");
             }
         }
     }
-    //display all transactions from a vendor that the user searches for
-    public static void vendorSearch(ArrayList<Transaction> transactions) {
-        String reportVendor;
-        System.out.print("Who is the Vendor? : ");
-        input.nextLine();
-        reportVendor = input.nextLine();
 
-        for (Transaction t : transactions) {
+    // Prints one transaction
+    public static void printTransaction(
+            Transaction transaction) {
 
-            if (t.getVendor().equalsIgnoreCase(reportVendor)) {
-                System.out.println(t);
-            }
-
-
+        if (transaction.getAmount() >= 0) {
+            System.out.println(
+                    GREEN + transaction + RESET);
+        } else {
+            System.out.println(
+                    RED + transaction + RESET);
         }
+    }
+
+    // Displays a summary for all transactions
+    public static void printTransactionSummary(
+            ArrayList<Transaction> transactions) {
+
+        double deposits = 0;
+        double payments = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() > 0) {
+                deposits += transaction.getAmount();
+            } else {
+                payments += Math.abs(transaction.getAmount());
+            }
+        }
+
+        System.out.println(CYAN
+                + "-----------------------------------------------------"
+                + RESET);
+        System.out.printf(
+                GREEN + "Total Deposits: $%,.2f%n" + RESET,
+                deposits);
+        System.out.printf(
+                RED + "Total Payments: $%,.2f%n" + RESET,
+                payments);
+        System.out.printf(
+                BLUE + BOLD + "Net Balance: $%,.2f%n" + RESET,
+                deposits - payments);
+    }
+
+    // Displays report totals
+    public static void displayReportSummary(
+            ArrayList<Transaction> transactions) {
+
+        if (transactions.isEmpty()) {
+            displayNoResults(
+                    "No transactions were found for this report.");
+            return;
+        }
+
+        double total = getBalance(transactions);
+
+        System.out.println(CYAN
+                + "-----------------------------------------------------"
+                + RESET);
+        System.out.println(
+                CYAN + "Transactions Found: "
+                        + transactions.size() + RESET);
+        System.out.printf(
+                BLUE + BOLD + "Report Net Total: $%,.2f%n" + RESET,
+                total);
+    }
+
+    // Prints section headers
+    public static void printSectionHeader(String title) {
+        System.out.println(CYAN + BOLD
+                + "=====================================================");
+        System.out.println(" " + title);
+        System.out.println(
+                "====================================================="
+                        + RESET);
+    }
+
+    // Displays error messages
+    public static void displayError(String message) {
+        System.out.println();
+        System.out.println(
+                RED + BOLD + "[ERROR] " + message + RESET);
+    }
+
+    // Displays empty-result messages
+    public static void displayNoResults(String message) {
+        System.out.println();
+        System.out.println(
+                YELLOW + "[NO RESULTS] " + message + RESET);
+    }
+
+    // Goodbye screen
+    public static void displayGoodbyeScreen() {
+        System.out.println();
+        System.out.println(BLUE + BOLD
+                + "=====================================================");
+        System.out.println("        THANK YOU FOR USING THE ACCOUNTING APP");
+        System.out.println("              Have a wonderful day!");
+        System.out.println(
+                "====================================================="
+                        + RESET);
     }
 }
-
-
-

@@ -9,20 +9,27 @@ public class ConsoleDecorator {
     private static final int WIDTH = 92;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final String GREEN = "\u001B[32m";
+    private static final String RED = "\u001B[31m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BOLD = "\u001B[1m";
+    private static final String RESET = "\u001B[0m";
 
     public static void appHeader(String title, String subtitle) {
         blankLine();
-        line("=");
-        centered(title.toUpperCase());
-        centered(subtitle);
-        line("=");
+        colorLine("=", CYAN);
+        centered(title.toUpperCase(), BOLD + YELLOW);
+        centered(subtitle, CYAN);
+        colorLine("=", CYAN);
     }
 
     public static void section(String title) {
         blankLine();
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
-        System.out.println("| " + padRight(title.toUpperCase(), WIDTH - 4) + " |");
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
+        printColored("| " + padRight(title.toUpperCase(), WIDTH - 4) + " |", BOLD + BLUE);
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
     }
 
     public static void menu(String title, String[] options) {
@@ -32,9 +39,9 @@ public class ConsoleDecorator {
             if (decoratedOption.length() > 1) {
                 decoratedOption = "[" + decoratedOption;
             }
-            System.out.println("|   " + padRight(decoratedOption, WIDTH - 6) + " |");
+            printColored("|   " + padRight(decoratedOption, WIDTH - 6) + " |", GREEN);
         }
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
         blankLine();
     }
 
@@ -55,8 +62,8 @@ public class ConsoleDecorator {
                 + "   Deposits: " + formatMoney(deposits)
                 + "   Payments: " + formatMoney(payments)
                 + "   Balance: " + formatMoney(deposits + payments);
-        System.out.println("| " + padRight(summary, WIDTH - 4) + " |");
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored("| " + padRight(summary, WIDTH - 4) + " |", CYAN);
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
     }
 
     public static void transactionTable(String title, ArrayList<Transaction> transactions) {
@@ -67,48 +74,50 @@ public class ConsoleDecorator {
             return;
         }
 
-        System.out.printf("| %-12s | %-10s | %-24s | %-18s | %12s |%n",
-                "Date", "Time", "Description", "Vendor", "Amount");
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored(String.format("| %-12s | %-10s | %-24s | %-18s | %12s |",
+                "Date", "Time", "Description", "Vendor", "Amount"), BOLD + CYAN);
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
 
         double total = 0;
         for (Transaction transaction : transactions) {
             total += transaction.getAmount();
-            System.out.printf("| %-12s | %-10s | %-24s | %-18s | %12s |%n",
+            String row = String.format("| %-12s | %-10s | %-24s | %-18s | %12s |",
                     transaction.getDateTime().format(DATE_FORMAT),
                     transaction.getDateTime().format(TIME_FORMAT),
                     shorten(transaction.getDescription(), 24),
                     shorten(transaction.getVendor(), 18),
                     formatMoney(transaction.getAmount()));
+            printColored(row, transaction.getAmount() < 0 ? RED : GREEN);
         }
 
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
-        System.out.printf("| %-73s | %12s |%n", "Total", formatMoney(total));
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
+        printColored(String.format("| %-73s | %12s |", "Total", formatMoney(total)),
+                total < 0 ? BOLD + RED : BOLD + GREEN);
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
     }
 
     public static void prompt(String prompt) {
-        System.out.print("> " + prompt + ": ");
+        System.out.print(color("> " + prompt + ": ", YELLOW));
     }
 
     public static void pausePrompt() {
-        System.out.print("> Press Enter to continue...");
+        System.out.print(color("> Press Enter to continue...", YELLOW));
     }
 
     public static void success(String message) {
         System.out.println();
-        System.out.println("[SUCCESS] " + message);
+        printColored("[SUCCESS] " + message, GREEN);
     }
 
     public static void notice(String message) {
-        System.out.println("[NOTICE] " + message);
+        printColored("[NOTICE] " + message, YELLOW);
     }
 
     public static void goodbye() {
         blankLine();
-        line("=");
-        centered("Thank you for using Accounting Ledger. Goodbye!");
-        line("=");
+        colorLine("=", CYAN);
+        centered("Thank you for using Accounting Ledger. Goodbye!", BOLD + YELLOW);
+        colorLine("=", CYAN);
     }
 
     public static String formatMoney(double amount) {
@@ -120,17 +129,25 @@ public class ConsoleDecorator {
     }
 
     private static void emptyState(String message) {
-        System.out.println("| " + padRight(message, WIDTH - 4) + " |");
-        System.out.println("+" + repeat("-", WIDTH - 2) + "+");
+        printColored("| " + padRight(message, WIDTH - 4) + " |", YELLOW);
+        printColored("+" + repeat("-", WIDTH - 2) + "+", BLUE);
     }
 
     private static void centered(String text) {
+        centered(text, "");
+    }
+
+    private static void centered(String text, String color) {
         int padding = Math.max(0, (WIDTH - text.length()) / 2);
-        System.out.println(repeat(" ", padding) + text);
+        printColored(repeat(" ", padding) + text, color);
     }
 
     private static void line(String character) {
         System.out.println(repeat(character, WIDTH));
+    }
+
+    private static void colorLine(String character, String color) {
+        printColored(repeat(character, WIDTH), color);
     }
 
     private static void blankLine() {
@@ -159,5 +176,17 @@ public class ConsoleDecorator {
             result += value;
         }
         return result;
+    }
+
+    private static void printColored(String text, String color) {
+        System.out.println(color(text, color));
+    }
+
+    private static String color(String text, String color) {
+        if (color == null || color.isBlank()) {
+            return text;
+        }
+
+        return color + text + RESET;
     }
 }

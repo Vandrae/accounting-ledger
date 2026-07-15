@@ -1,6 +1,7 @@
 package com.pluralsight.menus;
 
 import com.pluralsight.model.Transaction;
+import com.pluralsight.util.ConsoleDecorator;
 import com.pluralsight.util.FileManager;
 
 import java.time.LocalDateTime;
@@ -12,36 +13,29 @@ public class HomeMenu {
 
     //First menu user sees
     public static void homeMenu() {
+        ConsoleDecorator.appHeader(
+                "Accounting Ledger",
+                "Track deposits, payments, reports, and balances from one simple console.");
+
         boolean appRunning = true;
         while (appRunning) {
-            //Display Home Screen
-            System.out.println(" ");
-            System.out.println("Home Screen");
-            System.out.println(" ");
-            System.out.println("D) Add Deposit");
-            System.out.println("P) Make Payment");
-            System.out.println("L) Ledger");
-            System.out.println("X) Exit");
-            System.out.print("Pick an option from the menu above: ");
-            String menuSelection = input.nextLine().toUpperCase();
-            System.out.println("-------------------------------------");
-            System.out.println(" ");
+            ConsoleDecorator.menu("Home Screen", new String[]{
+                    "D) Add Deposit",
+                    "P) Make Payment",
+                    "L) Ledger",
+                    "X) Exit"
+            });
 
-            //Validate User Inputs
-            if (menuSelection.equalsIgnoreCase("D") || menuSelection.equalsIgnoreCase("P") ||
-                    menuSelection.equalsIgnoreCase("L") || menuSelection.equalsIgnoreCase("X")
-            ){
-                switch(menuSelection){
-                    case "D" -> makeDeposit();
-                    case "P" -> makePayment();
-                    case "L" -> LedgerMenu.displayLedgerMenu();
-                    case "X" -> {
-                        System.out.println("Thank you! Goodbye");
-                        appRunning = false;
-                    }
+            String menuSelection = askMenuOption("Choose an option", "DPLX");
+
+            switch(menuSelection){
+                case "D" -> makeDeposit();
+                case "P" -> makePayment();
+                case "L" -> LedgerMenu.displayLedgerMenu();
+                case "X" -> {
+                    ConsoleDecorator.goodbye();
+                    appRunning = false;
                 }
-            } else {
-                System.out.println("Enter a valid input!");
             }
         }
 
@@ -109,6 +103,18 @@ public class HomeMenu {
         }
     }
 
+    private static String askMenuOption(String prompt, String validOptions) {
+        while (true) {
+            ConsoleDecorator.prompt(prompt);
+            String answer = input.nextLine().trim().toUpperCase();
+            System.out.println();
 
+            if (answer.length() == 1 && validOptions.contains(answer)) {
+                return answer;
+            }
+
+            ConsoleDecorator.notice("Please enter one of these options: " + validOptions);
+        }
+    }
 
 }

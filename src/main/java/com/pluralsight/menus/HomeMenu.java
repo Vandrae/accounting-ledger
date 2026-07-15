@@ -1,19 +1,20 @@
 package com.pluralsight.menus;
 
-import com.pluralsight.util.FileManager;
 import com.pluralsight.model.Transaction;
+import com.pluralsight.util.FileManager;
 
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class HomeMenu {
+    //allows user input
+    public static Scanner input = new Scanner(System.in);
 
-    static Scanner input = new Scanner(System.in);
-    static LedgerMenu ledgerMenu = new LedgerMenu();
-
-    public static void displayHomeMenu() {
+    //First menu user sees
+    public static void homeMenu() {
         boolean appRunning = true;
         while (appRunning) {
+            //Display Home Screen
             System.out.println(" ");
             System.out.println("Home Screen");
             System.out.println(" ");
@@ -22,60 +23,92 @@ public class HomeMenu {
             System.out.println("L) Ledger");
             System.out.println("X) Exit");
             System.out.print("Pick an option from the menu above: ");
-            String selection = input.nextLine().toUpperCase();
+            String menuSelection = input.nextLine().toUpperCase();
             System.out.println("-------------------------------------");
             System.out.println(" ");
 
-            switch (selection) {
-                case "D" -> makeDeposit();
-                case "P" -> makePayment();
-                case "L" -> LedgerMenu.displayLedgerMenu();
-                case "X" -> {
-                    System.out.println("Thank you! Goodbye");
-                    appRunning = false;
+            //Validate User Inputs
+            if (menuSelection.equalsIgnoreCase("D") || menuSelection.equalsIgnoreCase("P") ||
+                    menuSelection.equalsIgnoreCase("L") || menuSelection.equalsIgnoreCase("X")
+            ){
+                switch(menuSelection){
+                    case "D" -> makeDeposit();
+                    case "P" -> makePayment();
+                    case "L" -> LedgerMenu.ledgerMenu();
+                    case "X" -> {
+                        System.out.println("Thank you! Goodbye");
+                        appRunning = false;
+                    }
                 }
-                default -> System.out.println("Not a valid option.");
+            } else {
+                System.out.println("Enter a valid input!");
             }
         }
+
     }
 
-    private static void makePayment() {
+    //method to be used in the home menu
+    public static void makePayment() {
+        String depositDescription;
+        LocalDateTime currentTime;
+        String depositVendor;
+        double depositAmount;
+
         try {
             System.out.print("Enter a description: ");
             String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
-            String vendor = input.nextLine();
+            depositVendor = input.nextLine();
+
+            //asks user to enter amount
             System.out.print("What is the amount? : ");
-            double amount = input.nextDouble();
+            depositAmount = input.nextDouble();
             input.nextLine();
 
-            if (amount >= 0) {
-                amount *= -1;
-            }
+            //today's date and current time
+            currentTime = LocalDateTime.now();
 
-            Transaction payment = new Transaction(LocalDateTime.now(), description, vendor, amount);
-            FileManager.saveTransaction(payment);
+            //if they enter a  negative it doesn't multiply a negative by a negative
+            if (depositAmount >= 0){
+                depositAmount *= -1;
+            }
+            Transaction paymentTransaction = new Transaction(currentTime, depositDescription, depositVendor, depositAmount);
+            FileManager.saveTransaction(paymentTransaction);
         } catch (Exception e) {
             input.nextLine();
             System.out.println("An error occurred");
         }
     }
 
-    private static void makeDeposit() {
+    //method to be used in the home menu
+    public static void makeDeposit() {
+        String depositDescription;
+        LocalDateTime currentTime;
+        String depositVendor;
+        double depositAmount;
+
         try {
             System.out.print("Enter a description: ");
             String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
-            String vendor = input.nextLine();
+            depositVendor = input.nextLine();
+            //asks user to enter amount
             System.out.print("What is the amount? : ");
-            double amount = input.nextDouble();
+            depositAmount = input.nextDouble();
             input.nextLine();
 
-            Transaction deposit = new Transaction(LocalDateTime.now(), description, vendor, Math.abs(amount));
-            FileManager.saveTransaction(deposit);
+            //today's date and current time
+            currentTime = LocalDateTime.now();
+
+            //regardless if they enter negative or positive output will always be a positive
+            Transaction depositTransaction = new Transaction(currentTime, depositDescription, depositVendor, Math.abs(depositAmount));
+            FileManager.saveTransaction(depositTransaction);
         } catch (Exception e) {
             input.nextLine();
             System.out.println("An error occurred");
         }
     }
+
+
+
 }

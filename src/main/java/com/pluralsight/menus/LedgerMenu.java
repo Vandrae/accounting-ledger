@@ -1,7 +1,7 @@
 package com.pluralsight.menus;
 
-import com.pluralsight.util.FileManager;
 import com.pluralsight.model.Transaction;
+import com.pluralsight.util.FileManager;
 
 import java.util.ArrayList;
 import java.util.Scanner;

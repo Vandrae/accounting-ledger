@@ -1,8 +1,8 @@
 package com.pluralsight.menus;
 
-import com.pluralsight.util.FileManager;
 import com.pluralsight.model.Transaction;
 import com.pluralsight.service.ReportService;
+import com.pluralsight.util.FileManager;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -55,5 +55,8 @@ public class ReportsMenu {
                 default -> System.out.println("Not a valid option.");
             }
         }
+
+
     }
+
 }

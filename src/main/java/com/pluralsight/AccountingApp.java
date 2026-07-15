@@ -1,4 +1,4 @@
-﻿package com.pluralsight;
+package com.pluralsight;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountingApp {
+    public static final String GREEN = "\u001B[32m";
+    public static final String RED = "\u001B[31m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String RESET = "\u001B[0m";
+
     private static final Scanner input = new Scanner(System.in);
     private static final String TRANSACTIONS_FILE = "src/main/resources/transactions.csv";
 

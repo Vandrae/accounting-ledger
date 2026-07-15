@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class ReportsMenu {
 
-    static Scanner input = new Scanner(System.in);
+    static Scanner input = HomeMenu.input;;
 
     public static void displayReportMenu() {
         ArrayList<Transaction> transactions = FileManager.loadTransactionsSortedDesc();

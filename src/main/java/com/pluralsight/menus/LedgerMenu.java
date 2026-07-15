@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class LedgerMenu {
 
-    static Scanner input = new Scanner(System.in);
+    static Scanner input = HomeMenu.input;
     static ReportsMenu reportsMenu = new ReportsMenu();
 
     public static void displayLedgerMenu() {
@@ -31,7 +31,7 @@ public class LedgerMenu {
             case "A" -> transactions.forEach(System.out::println);
             case "D" -> transactions.stream().filter(t -> t.getAmount() > 0).forEach(System.out::println);
             case "P" -> transactions.stream().filter(t -> t.getAmount() < 0).forEach(System.out::println);
-            case "R" -> reportsMenu.displayReportMenu();
+            case "R" -> ReportsMenu.displayReportMenu();
             case "H" -> System.out.println("Returning to the main menu...");
             default -> System.out.println("Not a valid option.");
         }

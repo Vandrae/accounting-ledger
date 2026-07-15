@@ -116,7 +116,8 @@ public class ConsoleDecorator {
     public static void goodbye() {
         blankLine();
         colorLine("=", CYAN);
-        centered("Thank you for using Accounting Ledger. Goodbye!", BOLD + YELLOW);
+        centered("THANK YOU FOR USING ACCOUNTING LEDGER", BOLD + YELLOW);
+        centered("Manage your money wisely. Have a great day!", GREEN);
         colorLine("=", CYAN);
     }
 

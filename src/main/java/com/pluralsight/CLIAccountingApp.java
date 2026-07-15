@@ -2,7 +2,7 @@ package com.pluralsight;
 
 import com.pluralsight.menus.HomeMenu;
 
-public class AccountingApp {
+public class CLIAccountingApp {
     public static final String GREEN = "\u001B[32m";
     public static final String RED = "\u001B[31m";
     public static final String BLUE = "\u001B[34m";

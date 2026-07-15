@@ -41,7 +41,7 @@ public class HomeMenu {
 
     private static void makePayment() {
         try {
-            System.out.print("enter a description: ");
+            System.out.print("Enter a description: ");
             String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
             String vendor = input.nextLine();
@@ -56,13 +56,14 @@ public class HomeMenu {
             Transaction payment = new Transaction(LocalDateTime.now(), description, vendor, amount);
             FileManager.saveTransaction(payment);
         } catch (Exception e) {
+            input.nextLine();
             System.out.println("An error occurred");
         }
     }
 
     private static void makeDeposit() {
         try {
-            System.out.print("enter a description: ");
+            System.out.print("Enter a description: ");
             String description = input.nextLine();
             System.out.print("Who is the Vendor? : ");
             String vendor = input.nextLine();
@@ -73,6 +74,7 @@ public class HomeMenu {
             Transaction deposit = new Transaction(LocalDateTime.now(), description, vendor, Math.abs(amount));
             FileManager.saveTransaction(deposit);
         } catch (Exception e) {
+            input.nextLine();
             System.out.println("An error occurred");
         }
     }
